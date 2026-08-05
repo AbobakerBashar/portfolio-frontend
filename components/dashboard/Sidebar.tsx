@@ -1,6 +1,13 @@
 "use client";
 
-import { FolderKanban, LayoutDashboard, Menu, Plus, X } from "lucide-react";
+import {
+	Code2,
+	FolderKanban,
+	LayoutDashboard,
+	Menu,
+	Plus,
+	X,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -11,6 +18,8 @@ const NAV_ITEMS = [
 	{ href: "/dashboard", label: "Overview", icon: LayoutDashboard },
 	{ href: "/dashboard/projects", label: "Projects", icon: FolderKanban },
 	{ href: "/dashboard/projects/new", label: "Add Project", icon: Plus },
+	{ href: "/dashboard/skills", label: "Skills", icon: Code2 },
+	{ href: "/dashboard/skills/new", label: "Add Skill", icon: Plus },
 ];
 
 export default function Sidebar() {

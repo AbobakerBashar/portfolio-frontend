@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import ToggleTheme from "./ToggleTheme";
 import { useScrollSpy } from "@/hooks/use-scroll-spy";
+import Logo from "./Logo";
 
 const NAV_LINKS = [
 	{ id: "home", label: "Home" },
@@ -71,24 +72,8 @@ export default function Navbar() {
 					}`}
 				>
 					{/* Logo */}
-					<button
-						onClick={() => scrollTo("home")}
-						className="flex items-center gap-2 group"
-					>
-						<div
-							className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold"
-							style={{
-								background: "linear-gradient(135deg, #6366f1, #06b6d4)",
-							}}
-						>
-							A
-						</div>
-						<span
-							className="font-display font-semibold text-sm hidden sm:block"
-							style={{ color: "var(--foreground)" }}
-						>
-							Abobaker<span className="text-indigo-400">.</span>dev
-						</span>
+					<button onClick={() => scrollTo("home")}>
+						<Logo className="w-32 h-auto cursor-pointer" />
 					</button>
 
 					{/* Desktop nav */}

@@ -1,29 +1,31 @@
-# Dashboard — Project Management TODO
+# Dashboard — Skills Management TODO
 
-## 1. Data layer
+## 1. Data Layer
 
-- [x] `lib/projects.ts` — localStorage CRUD + seed from `data/index.ts` (`ProjectFormValues`, `DashboardProject`)
-- [x] `hooks/use-projects.ts` — TanStack Query hooks (`useProjects`, `useProject`, `useAddProject`, `useUpdateProject`, `useDeleteProject`)
+- [x] `lib/skills.ts` — localStorage CRUD + seed from `data/index.ts` (`SkillFormValues`, `DashboardSkill`) with `order` + `featured` fields and expanded categories
 
-## 2. Dashboard shell
+## 2. TanStack Query Hooks
 
-- [x] `components/dashboard/Sidebar.tsx` — dashboard sidebar + top chrome (client, responsive)
-- [x] `app/dashboard/layout.tsx` — Next.js layout wrapping children with `Sidebar`
-- [x] Remove obsolete `app/dashboard/layoute.tsx`
+- [x] `hooks/use-skills.ts` — TanStack Query hooks (`useSkills`, `useSkill`, `useAddSkill`, `useUpdateSkill`, `useDeleteSkill`)
 
-## 3. Dashboard components
+## 3. Components
 
-- [x] `components/dashboard/ProjectCard.tsx` — reusable card with edit/delete
-- [x] `components/dashboard/ProjectForm.tsx` — shared add/edit form (react-hook-form)
+- [x] `components/dashboard/SkillForm.tsx` — Add/edit skill form (react-hook-form) with category picker, level slider, icon picker, order input, featured toggle
+- [x] `components/dashboard/SkillCard.tsx` — Skill card with featured badge, order badge, level bar, edit/delete
 
-## 4. Dashboard pages
+## 4. Dashboard Pages
 
-- [x] `app/dashboard/page.tsx` — Overview with stats + recent projects
-- [x] `app/dashboard/projects/page.tsx` — All projects with search + filter + delete
-- [x] `app/dashboard/projects/new/page.tsx` — Create project
-- [x] `app/dashboard/projects/[id]/edit/page.tsx` — Edit project
+- [x] `app/dashboard/skills/page.tsx` — All skills with search + filter + delete, sorted by order (featured first)
+- [x] `app/dashboard/skills/new/page.tsx` — Create skill
+- [x] `app/dashboard/skills/[id]/edit/page.tsx` — Edit skill
 
-## 5. Verify
+## 5. Dashboard Integration
 
-- [x] `npm run lint` — pass for dashboard code (2 pre-existing errors in `hooks/use-on-screen.ts` / `hooks/use-typing.ts`, unrelated to dashboard; 1 warning in `ProjectForm.tsx` for React Compiler `watch()` compatibility)
-- [x] `npm run build` — pass (Next.js compiled successfully)
+- [x] Edit `components/dashboard/Sidebar.tsx` — Add Skills nav items
+- [x] Edit `app/dashboard/page.tsx` — Add skills stats + recent skills (sorted by order)
+
+## 6. Verify
+
+- [x] `npm run build` — pass for skills code (compiled successfully in 65s, TypeScript checks running)
+
+</content>
