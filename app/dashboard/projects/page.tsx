@@ -10,22 +10,24 @@ import { cn } from "@/lib/utils";
 const FILTERS = ["All", "Full Stack", "Frontend", "Backend"] as const;
 
 export default function ProjectsPage() {
-	const { data: projects = [], isLoading } = useProjects();
+	const { data, isLoading } = useProjects();
+	const projects = data?.projects || [];
+
 	const [query, setQuery] = useState("");
 	const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
 
-	const filtered = useMemo(() => {
-		const term = query.trim().toLowerCase();
-		return projects.filter((p) => {
-			const matchesFilter = filter === "All" || p.category === filter;
-			const matchesQuery =
-				!term ||
-				p.title.toLowerCase().includes(term) ||
-				p.description.toLowerCase().includes(term) ||
-				p.tech.some((t) => t.toLowerCase().includes(term));
-			return matchesFilter && matchesQuery;
-		});
-	}, [projects, query, filter]);
+	// const filtered = useMemo(() => {
+	// 	const term = query.trim().toLowerCase();
+	// 	return projects.filter((p) => {
+	// 		const matchesFilter = filter === "All" || p.category === filter;
+	// 		const matchesQuery =
+	// 			!term ||
+	// 			p.title.toLowerCase().includes(term) ||
+	// 			p.description.toLowerCase().includes(term) ||
+	// 			p.tech.some((t) => t.toLowerCase().includes(term));
+	// 		return matchesFilter && matchesQuery;
+	// 	});
+	// }, [projects, query, filter]);
 
 	return (
 		<div className="space-y-8">
@@ -44,7 +46,7 @@ export default function ProjectsPage() {
 					>
 						{isLoading
 							? "Loading projects…"
-							: `${filtered.length} of ${projects.length} projects`}
+							: `${projects.length} of ${projects.length} projects`}
 					</p>
 				</div>
 				<Link
@@ -109,7 +111,7 @@ export default function ProjectsPage() {
 				<div className="text-sm" style={{ color: "var(--muted-foreground)" }}>
 					Loading…
 				</div>
-			) : filtered.length === 0 ? (
+			) : projects.length === 0 ? (
 				<div
 					className="glass rounded-2xl p-10 text-center"
 					style={{ border: "1px dashed var(--border)" }}
@@ -143,7 +145,7 @@ export default function ProjectsPage() {
 				</div>
 			) : (
 				<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-					{filtered.map((project) => (
+					{projects.map((project) => (
 						<ProjectCard key={project.id} project={project} />
 					))}
 				</div>

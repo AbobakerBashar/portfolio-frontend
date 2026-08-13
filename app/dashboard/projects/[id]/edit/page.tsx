@@ -1,25 +1,34 @@
 "use client";
 
 import ProjectForm from "@/components/dashboard/ProjectForm";
-import { useProject, useUpdateProject } from "@/hooks/use-projects";
+import { useProject } from "@/hooks/use-projects";
+import { ProjectFormValues } from "@/types/project";
 import { ArrowLeft, PackageX } from "lucide-react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 
 export default function EditProjectPage() {
 	const params = useParams<{ id: string }>();
-	const router = useRouter();
 
-	const { data: project, isLoading } = useProject(params.id);
-	const updateMutation = useUpdateProject();
+	const { data, isLoading } = useProject(params.id);
 
-	const toFormValues = (p: typeof project) => {
-		if (!p) return undefined;
-		const { id, createdAt, updatedAt, ...values } = p;
-		void id;
-		void createdAt;
-		void updatedAt;
-		return values;
+	const project = data?.project;
+
+	if (isLoading) return;
+
+	if (!project) notFound();
+
+	const formValues: ProjectFormValues = {
+		title: project.title,
+		description: project.description,
+		category: project.category,
+		preview: project.image,
+		tech: project.tech,
+		features: project.features,
+		demo: project.demo,
+		github: project.github,
+		color: project.color,
+		image: null,
 	};
 
 	return (
@@ -90,32 +99,11 @@ export default function EditProjectPage() {
 					style={{ border: "1px solid var(--border)" }}
 				>
 					<ProjectForm
-						initialValues={toFormValues(project)}
+						initialValues={formValues}
 						submitLabel="Update Project"
-						isSubmitting={updateMutation.isPending}
-						onCancel={() => router.push("/dashboard/projects")}
-						onSubmit={(values) => {
-							updateMutation.mutate(
-								{ id: project.id, values },
-								{
-									onSuccess: () => router.push("/dashboard/projects"),
-								},
-							);
-						}}
+						id={params.id}
+						editting={true}
 					/>
-				</div>
-			)}
-
-			{updateMutation.isError && (
-				<div
-					className="rounded-xl p-4 text-sm"
-					style={{
-						background: "rgba(239,68,68,0.1)",
-						color: "#ef4444",
-						border: "1px solid #ef4444",
-					}}
-				>
-					There was an error saving the project. Please try again.
 				</div>
 			)}
 		</div>

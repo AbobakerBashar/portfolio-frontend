@@ -8,7 +8,8 @@ import ProjectCard from "@/components/dashboard/ProjectCard";
 import SkillCard from "@/components/dashboard/SkillCard";
 
 export default function DashboardHome() {
-	const { data: projects = [], isLoading } = useProjects();
+	const { data: projectsData, isLoading } = useProjects();
+	const projects = projectsData?.projects || [];
 	const { data, isLoading: skillsLoading } = useSkills();
 
 	const skills = data?.skills || [];

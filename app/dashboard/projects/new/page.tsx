@@ -4,10 +4,8 @@ import ProjectForm from "@/components/dashboard/ProjectForm";
 import { useAddProject } from "@/hooks/use-projects";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 export default function NewProjectPage() {
-	const router = useRouter();
 	const addMutation = useAddProject();
 
 	return (
@@ -39,16 +37,7 @@ export default function NewProjectPage() {
 				className="glass rounded-2xl p-6 md:p-8"
 				style={{ border: "1px solid var(--border)" }}
 			>
-				<ProjectForm
-					submitLabel="Create Project"
-					isSubmitting={addMutation.isPending}
-					onCancel={() => router.push("/dashboard/projects")}
-					onSubmit={(values) => {
-						addMutation.mutate(values, {
-							onSuccess: () => router.push("/dashboard/projects"),
-						});
-					}}
-				/>
+				<ProjectForm submitLabel="Create Project" />
 			</div>
 
 			{addMutation.isError && (
