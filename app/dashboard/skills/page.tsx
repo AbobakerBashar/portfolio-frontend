@@ -20,12 +20,10 @@ export default function SkillsPage() {
 	const [query, setQuery] = useState("");
 	const [filter, setFilter] = useState<string>("All");
 
-	const skills = data?.skills || [];
-
 	const filtered = useMemo(() => {
 		const term = query.trim().toLowerCase();
 
-		let list: DashboardSkill[] = skills.filter((s) => {
+		let list: DashboardSkill[] = (data?.skills || []).filter((s) => {
 			const matchesFilter = filter === "All" || s.category === filter;
 			const matchesQuery =
 				!term ||
@@ -44,7 +42,7 @@ export default function SkillsPage() {
 		);
 
 		return list;
-	}, [skills, query, filter]);
+	}, [data, query, filter]);
 
 	return (
 		<div className="space-y-8">
@@ -61,7 +59,7 @@ export default function SkillsPage() {
 						className="text-sm mt-1"
 						style={{ color: "var(--muted-foreground)" }}
 					>
-						{filtered.length} of ${skills.length} skills
+						{filtered.length} of ${data?.skills?.length} skills
 					</p>
 				</div>
 				<Link
