@@ -1,271 +1,501 @@
-import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useSendMsg } from "@/hooks/use-contact";
+import { loadProfile } from "@/lib/profile";
+import type { ContactInput } from "@/types/contact";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { Button } from "./ui/button";
 
-type FormState = { name: string; email: string; subject: string; message: string }
-type Status = 'idle' | 'loading' | 'success' | 'error'
+const FORM = {
+	name: "",
+	email: "",
+	subject: "",
+	message: "",
+};
 
 export default function Contact() {
-  const [form, setForm] = useState<FormState>({ name: '', email: '', subject: '', message: '' })
-  const [status, setStatus] = useState<Status>('idle')
-  const [copied, setCopied] = useState(false)
+	const [form, setForm] = useState<ContactInput>(FORM);
+	const [errors, setErrors] = useState<Record<string, string> | null>(null);
+	const [copied, setCopied] = useState(false);
+	const [success, setSuccess] = useState(false);
+	const { mutateAsync: sendMsg, isPending: isSending } = useSendMsg();
+	const profile = loadProfile();
 
-  const EMAIL = 'abobaker.yagoub@gmail.com'
+	const EMAIL = profile.email;
 
-  const copyEmail = () => {
-    navigator.clipboard.writeText(EMAIL)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+	const copyEmail = () => {
+		navigator.clipboard.writeText(EMAIL);
+		setCopied(true);
+		setTimeout(() => setCopied(false), 2000);
+	};
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!form.name || !form.email || !form.message) return
-    setStatus('loading')
-    setTimeout(() => {
-      setStatus('success')
-      setForm({ name: '', email: '', subject: '', message: '' })
-      setTimeout(() => setStatus('idle'), 5000)
-    }, 1500)
-  }
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
 
-  return (
-    <section id="contact" className="relative py-32 px-4">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-16 opacity-20"
-        style={{ background: 'linear-gradient(to bottom, transparent, #6366f1)' }} />
+		setErrors(null);
+		setSuccess(false);
 
-      {/* Background accent */}
-      <div className="absolute bottom-0 left-0 right-0 h-64 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at center bottom, rgba(99,102,241,0.06) 0%, transparent 70%)' }} />
+		if (!form.name || !form.email || !form.message)
+			return setErrors({
+				error: "Please fill all fields.",
+			});
+		const res = await sendMsg(form);
+		if (res && res.success) {
+			setSuccess(true);
+			setForm(FORM);
+		} else {
+			if (res?.errors) setErrors(res.errors);
+			else
+				setErrors({
+					error:
+						res?.message ||
+						"An unexpected error occurred. Please try again later.",
+				});
+		}
+	};
 
-      <div className="max-w-5xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <span className="text-xs font-mono font-semibold tracking-widest uppercase mb-3 block" style={{ color: '#6366f1' }}>
-            Get In Touch
-          </span>
-          <h2 className="font-display font-bold text-4xl md:text-5xl mb-4" style={{ color: 'var(--foreground)' }}>
-            Let&apos;s Work Together
-          </h2>
-          <p className="text-base max-w-xl mx-auto" style={{ color: 'var(--muted-foreground)' }}>
-            Have a project in mind? I&apos;m open to freelance projects, full-time roles, and interesting collaborations.
-          </p>
-        </motion.div>
+	return (
+		<section id="contact" className="relative py-32 px-4">
+			<div
+				className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-16 opacity-20"
+				style={{
+					background: "linear-gradient(to bottom, transparent, #6366f1)",
+				}}
+			/>
 
-        <div className="grid lg:grid-cols-5 gap-8">
-          {/* Left info */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="lg:col-span-2 space-y-4"
-          >
-            {/* Email card */}
-            <div className="glass rounded-2xl p-5">
-              <div className="text-xs font-mono font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--muted-foreground)' }}>
-                Email
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-sm truncate" style={{ color: 'var(--foreground)' }}>{EMAIL}</span>
-                <button
-                  onClick={copyEmail}
-                  className="flex-shrink-0 p-2 rounded-lg transition-all hover:scale-105"
-                  style={{ background: copied ? 'rgba(16,185,129,0.1)' : 'var(--secondary)', color: copied ? '#10b981' : 'var(--muted-foreground)' }}
-                  title="Copy email"
-                >
-                  {copied ? (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                  ) : (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
-                      <rect x="9" y="9" width="13" height="13" rx="2"/>
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                    </svg>
-                  )}
-                </button>
-              </div>
-            </div>
+			{/* Background accent */}
+			<div
+				className="absolute bottom-0 left-0 right-0 h-64 pointer-events-none"
+				style={{
+					background:
+						"radial-gradient(ellipse at center bottom, rgba(99,102,241,0.06) 0%, transparent 70%)",
+				}}
+			/>
 
-            {/* Location */}
-            <div className="glass rounded-2xl p-5">
-              <div className="text-xs font-mono font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--muted-foreground)' }}>
-                Location
-              </div>
-              <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--foreground)' }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" width="14" height="14">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                  <circle cx="12" cy="10" r="3"/>
-                </svg>
-                Khartoum, Sudan · Open to Remote
-              </div>
-            </div>
+			<div className="max-w-5xl mx-auto">
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					viewport={{ once: true }}
+					className="text-center mb-16"
+				>
+					<span
+						className="text-xs font-mono font-semibold tracking-widest uppercase mb-3 block"
+						style={{ color: "#6366f1" }}
+					>
+						Get In Touch
+					</span>
+					<h2
+						className="font-display font-bold text-4xl md:text-5xl mb-4"
+						style={{ color: "var(--foreground)" }}
+					>
+						Let&apos;s Work Together
+					</h2>
+					<p
+						className="text-base max-w-xl mx-auto"
+						style={{ color: "var(--muted-foreground)" }}
+					>
+						Have a project in mind? I&apos;m open to freelance projects,
+						full-time roles, and interesting collaborations.
+					</p>
+				</motion.div>
 
-            {/* Social links */}
-            <div className="glass rounded-2xl p-5">
-              <div className="text-xs font-mono font-semibold uppercase tracking-wider mb-4" style={{ color: 'var(--muted-foreground)' }}>
-                Social
-              </div>
-              <div className="space-y-3">
-                {[
-                  { label: 'GitHub', href: 'https://github.com/abobakeryagoub', color: '#6366f1', sub: '@abobakeryagoub' },
-                  { label: 'LinkedIn', href: 'https://linkedin.com/in/abobakeryagoub', color: '#0ea5e9', sub: '/in/abobakeryagoub' },
-                ].map((s) => (
-                  <a
-                    key={s.label}
-                    href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between group p-2 rounded-xl transition-all hover:bg-white/5"
-                  >
-                    <span className="font-semibold text-sm" style={{ color: 'var(--foreground)' }}>{s.label}</span>
-                    <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>{s.sub}</span>
-                  </a>
-                ))}
-              </div>
-            </div>
+				<div className="grid lg:grid-cols-5 gap-8">
+					{/* Left info */}
+					<motion.div
+						initial={{ opacity: 0, x: -30 }}
+						whileInView={{ opacity: 1, x: 0 }}
+						viewport={{ once: true }}
+						className="lg:col-span-2 space-y-4"
+					>
+						{/* Email card */}
+						<div className="glass rounded-2xl p-5">
+							<div
+								className="text-xs font-mono font-semibold uppercase tracking-wider mb-3"
+								style={{ color: "var(--muted-foreground)" }}
+							>
+								Email
+							</div>
+							<div className="flex items-center justify-between gap-2">
+								<span
+									className="text-sm truncate"
+									style={{ color: "var(--foreground)" }}
+								>
+									{EMAIL}
+								</span>
+								<button
+									onClick={copyEmail}
+									className="shrink-0 p-2 rounded-lg transition-all hover:scale-105"
+									style={{
+										background: copied
+											? "rgba(16,185,129,0.1)"
+											: "var(--secondary)",
+										color: copied ? "#10b981" : "var(--muted-foreground)",
+									}}
+									title="Copy email"
+								>
+									{copied ? (
+										<svg
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+											width="14"
+											height="14"
+										>
+											<polyline points="20 6 9 17 4 12" />
+										</svg>
+									) : (
+										<svg
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+											width="14"
+											height="14"
+										>
+											<rect x="9" y="9" width="13" height="13" rx="2" />
+											<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+										</svg>
+									)}
+								</button>
+							</div>
+						</div>
 
-            {/* Availability badge */}
-            <div className="glass rounded-2xl p-5 flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse" />
-              <div>
-                <div className="font-semibold text-sm" style={{ color: 'var(--foreground)' }}>Available for hire</div>
-                <div className="text-xs" style={{ color: 'var(--muted-foreground)' }}>Response time: within 24h</div>
-              </div>
-            </div>
-          </motion.div>
+						{/* Location */}
+						<div className="glass rounded-2xl p-5">
+							<div
+								className="text-xs font-mono font-semibold uppercase tracking-wider mb-2"
+								style={{ color: "var(--muted-foreground)" }}
+							>
+								Location
+							</div>
+							<div
+								className="flex items-center gap-2 text-sm"
+								style={{ color: "var(--foreground)" }}
+							>
+								<svg
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="#6366f1"
+									strokeWidth="2"
+									width="14"
+									height="14"
+								>
+									<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+									<circle cx="12" cy="10" r="3" />
+								</svg>
+								{profile.location} · {profile.availability}
+							</div>
+						</div>
 
-          {/* Right form */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="lg:col-span-3"
-          >
-            <form onSubmit={handleSubmit} className="glass rounded-3xl p-7 space-y-5">
-              <div className="grid sm:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-xs font-mono font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--muted-foreground)' }}>
-                    Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="Abobaker"
-                    required
-                    className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200"
-                    style={{
-                      background: 'var(--secondary)',
-                      border: '1px solid var(--border)',
-                      color: 'var(--foreground)',
-                    }}
-                    onFocus={(e) => { e.target.style.borderColor = '#6366f1'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.1)' }}
-                    onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; e.target.style.boxShadow = 'none' }}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-mono font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--muted-foreground)' }}>
-                    Email *
-                  </label>
-                  <input
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    placeholder="you@example.com"
-                    required
-                    className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200"
-                    style={{ background: 'var(--secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
-                    onFocus={(e) => { e.target.style.borderColor = '#6366f1'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.1)' }}
-                    onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; e.target.style.boxShadow = 'none' }}
-                  />
-                </div>
-              </div>
+						{/* Social links */}
+						<div className="glass rounded-2xl p-5">
+							<div
+								className="text-xs font-mono font-semibold uppercase tracking-wider mb-4"
+								style={{ color: "var(--muted-foreground)" }}
+							>
+								Social
+							</div>
+							<div className="space-y-3">
+								{[
+									{
+										label: "GitHub",
+										href: profile.github,
+										color: "#6366f1",
+										sub: profile.github.replace("https://github.com/", "@"),
+									},
+									{
+										label: "LinkedIn",
+										href: profile.linkedin,
+										color: "#0ea5e9",
+										sub: profile.linkedin.replace(
+											"https://linkedin.com/in/",
+											"/in/",
+										),
+									},
+								].map((s) => (
+									<a
+										key={s.label}
+										href={s.href}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="flex items-center justify-between group p-2 rounded-xl transition-all hover:bg-white/5"
+									>
+										<span
+											className="font-semibold text-sm"
+											style={{ color: "var(--foreground)" }}
+										>
+											{s.label}
+										</span>
+										<span
+											className="text-xs"
+											style={{ color: "var(--muted-foreground)" }}
+										>
+											{s.sub}
+										</span>
+									</a>
+								))}
+							</div>
+						</div>
 
-              <div>
-                <label className="block text-xs font-mono font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--muted-foreground)' }}>
-                  Subject
-                </label>
-                <input
-                  type="text"
-                  value={form.subject}
-                  onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                  placeholder="Project collaboration"
-                  className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200"
-                  style={{ background: 'var(--secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
-                  onFocus={(e) => { e.target.style.borderColor = '#6366f1'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.1)' }}
-                  onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; e.target.style.boxShadow = 'none' }}
-                />
-              </div>
+						{/* Availability badge */}
+						<div className="glass rounded-2xl p-5 flex items-center gap-3">
+							<div className="w-3 h-3 rounded-full bg-green-400 animate-pulse" />
+							<div>
+								<div
+									className="font-semibold text-sm"
+									style={{ color: "var(--foreground)" }}
+								>
+									Available for hire
+								</div>
+								<div
+									className="text-xs"
+									style={{ color: "var(--muted-foreground)" }}
+								>
+									Response time: within 24h
+								</div>
+							</div>
+						</div>
+					</motion.div>
 
-              <div>
-                <label className="block text-xs font-mono font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--muted-foreground)' }}>
-                  Message *
-                </label>
-                <textarea
-                  value={form.message}
-                  onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  placeholder="Tell me about your project..."
-                  required
-                  rows={5}
-                  className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200 resize-none"
-                  style={{ background: 'var(--secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
-                  onFocus={(e) => { e.target.style.borderColor = '#6366f1'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.1)' }}
-                  onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; e.target.style.boxShadow = 'none' }}
-                />
-              </div>
+					{/* Right form */}
+					<motion.div
+						initial={{ opacity: 0, x: 30 }}
+						whileInView={{ opacity: 1, x: 0 }}
+						viewport={{ once: true }}
+						className="lg:col-span-3"
+					>
+						<form
+							onSubmit={handleSubmit}
+							className="glass rounded-3xl p-7 space-y-5"
+						>
+							<div className="grid sm:grid-cols-2 gap-5">
+								<div>
+									<label
+										className="block text-xs font-mono font-semibold uppercase tracking-wider mb-2"
+										style={{ color: "var(--muted-foreground)" }}
+									>
+										Name *
+									</label>
+									<input
+										type="text"
+										value={form.name}
+										onChange={(e) => setForm({ ...form, name: e.target.value })}
+										placeholder="Jhon Doe"
+										required
+										className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200"
+										style={{
+											background: "var(--secondary)",
+											border: "1px solid var(--border)",
+											color: "var(--foreground)",
+										}}
+										onFocus={(e) => {
+											e.target.style.borderColor = "#6366f1";
+											e.target.style.boxShadow =
+												"0 0 0 3px rgba(99,102,241,0.1)";
+										}}
+										onBlur={(e) => {
+											e.target.style.borderColor = "var(--border)";
+											e.target.style.boxShadow = "none";
+										}}
+									/>{" "}
+									{errors?.name && (
+										<p className="text-destructive">{errors.name}</p>
+									)}
+								</div>
+								<div>
+									<label
+										className="block text-xs font-mono font-semibold uppercase tracking-wider mb-2"
+										style={{ color: "var(--muted-foreground)" }}
+									>
+										Email *
+									</label>
+									<input
+										type="email"
+										value={form.email}
+										onChange={(e) =>
+											setForm({ ...form, email: e.target.value })
+										}
+										placeholder="you@example.com"
+										required
+										className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200"
+										style={{
+											background: "var(--secondary)",
+											border: "1px solid var(--border)",
+											color: "var(--foreground)",
+										}}
+										onFocus={(e) => {
+											e.target.style.borderColor = "#6366f1";
+											e.target.style.boxShadow =
+												"0 0 0 3px rgba(99,102,241,0.1)";
+										}}
+										onBlur={(e) => {
+											e.target.style.borderColor = "var(--border)";
+											e.target.style.boxShadow = "none";
+										}}
+									/>{" "}
+									{errors?.email && (
+										<p className="text-destructive">{errors.email}</p>
+									)}
+								</div>
+							</div>
 
-              {/* Submit */}
-              <motion.button
-                type="submit"
-                disabled={status === 'loading'}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                className="w-full py-3.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60"
-                style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 0 30px rgba(99,102,241,0.25)' }}
-              >
-                {status === 'loading' ? (
-                  <>
-                    <svg className="animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-                      <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-                    </svg>
-                    Sending...
-                  </>
-                ) : status === 'success' ? (
-                  <>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                    Message Sent!
-                  </>
-                ) : (
-                  <>
-                    Send Message
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-                      <line x1="22" y1="2" x2="11" y2="13"/>
-                      <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                    </svg>
-                  </>
-                )}
-              </motion.button>
+							<div>
+								<label
+									className="block text-xs font-mono font-semibold uppercase tracking-wider mb-2"
+									style={{ color: "var(--muted-foreground)" }}
+								>
+									Subject
+								</label>
+								<input
+									type="text"
+									value={form.subject}
+									onChange={(e) =>
+										setForm({ ...form, subject: e.target.value })
+									}
+									placeholder="Project collaboration"
+									className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200"
+									style={{
+										background: "var(--secondary)",
+										border: "1px solid var(--border)",
+										color: "var(--foreground)",
+									}}
+									onFocus={(e) => {
+										e.target.style.borderColor = "#6366f1";
+										e.target.style.boxShadow = "0 0 0 3px rgba(99,102,241,0.1)";
+									}}
+									onBlur={(e) => {
+										e.target.style.borderColor = "var(--border)";
+										e.target.style.boxShadow = "none";
+									}}
+								/>{" "}
+								{errors?.subject && (
+									<p className="text-destructive">{errors.subject}</p>
+								)}
+							</div>
 
-              {status === 'success' && (
-                <motion.div
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-center text-sm py-2 rounded-xl"
-                  style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981' }}
-                >
-                  Thanks! I&apos;ll get back to you within 24 hours.
-                </motion.div>
-              )}
-            </form>
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  )
+							<div>
+								<label
+									className="block text-xs font-mono font-semibold uppercase tracking-wider mb-2"
+									style={{ color: "var(--muted-foreground)" }}
+								>
+									Message *
+								</label>
+								<textarea
+									value={form.message}
+									onChange={(e) =>
+										setForm({ ...form, message: e.target.value })
+									}
+									placeholder="Tell me about your project..."
+									required
+									rows={5}
+									className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200 resize-none"
+									style={{
+										background: "var(--secondary)",
+										border: "1px solid var(--border)",
+										color: "var(--foreground)",
+									}}
+									onFocus={(e) => {
+										e.target.style.borderColor = "#6366f1";
+										e.target.style.boxShadow = "0 0 0 3px rgba(99,102,241,0.1)";
+									}}
+									onBlur={(e) => {
+										e.target.style.borderColor = "var(--border)";
+										e.target.style.boxShadow = "none";
+									}}
+								/>
+								{errors?.message && (
+									<p className="text-destructive">{errors.message}</p>
+								)}
+							</div>
+							{errors?.error && (
+								<p className="text-destructive">{errors.error}</p>
+							)}
+							{/* Submit */}
+							<motion.button
+								type="submit"
+								disabled={isSending}
+								whileHover={{ scale: 1.01 }}
+								whileTap={{ scale: 0.99 }}
+								className="w-full py-3.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60"
+								style={{
+									background: "linear-gradient(135deg, #6366f1, #4f46e5)",
+									boxShadow: "0 0 30px rgba(99,102,241,0.25)",
+								}}
+							>
+								{isSending ? (
+									<>
+										<svg
+											className="animate-spin"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+											width="16"
+											height="16"
+										>
+											<path d="M21 12a9 9 0 1 1-6.219-8.56" />
+										</svg>
+										Sending...
+									</>
+								) : success ? (
+									<>
+										<svg
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+											width="16"
+											height="16"
+										>
+											<polyline points="20 6 9 17 4 12" />
+										</svg>
+										Message Sent!
+									</>
+								) : (
+									<>
+										Send Message
+										<svg
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+											width="16"
+											height="16"
+										>
+											<line x1="22" y1="2" x2="11" y2="13" />
+											<polygon points="22 2 15 22 11 13 2 9 22 2" />
+										</svg>
+									</>
+								)}
+							</motion.button>
+
+							{success && (
+								<motion.div
+									initial={{ opacity: 0, y: 6 }}
+									animate={{ opacity: 1, y: 0 }}
+									className="text-center text-sm py-2 rounded-xl"
+									style={{
+										background: "rgba(16,185,129,0.1)",
+										color: "#10b981",
+									}}
+								>
+									Thanks! I&apos;ll get back to you within 24 hours.
+								</motion.div>
+							)}
+							{success && (
+								<Button
+									onClick={() => setSuccess(false)}
+									variant="outline"
+									className="cursor-pointer w-full"
+								>
+									Send again
+								</Button>
+							)}
+						</form>
+					</motion.div>
+				</div>
+			</div>
+		</section>
+	);
 }

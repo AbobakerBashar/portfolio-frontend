@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { DEFAULT_PROFILE, loadProfile } from "@/lib/profile";
 import { useTypingEffect } from "@/hooks/useTypingEffect";
 
 const TYPING_STRINGS = [
@@ -17,6 +19,11 @@ const fadeUp = {
 
 export default function Hero() {
 	const typedText = useTypingEffect(TYPING_STRINGS);
+	const [profile, setProfile] = useState(DEFAULT_PROFILE);
+
+	useEffect(() => {
+		setProfile(loadProfile());
+	}, []);
 
 	return (
 		<section
@@ -82,9 +89,13 @@ export default function Hero() {
 						>
 							<span style={{ color: "var(--foreground)" }}>Hi, I&apos;m</span>
 							<br />
-							<span className="text-gradient">Abobaker</span>
+							<span className="text-gradient">
+								{profile.fullName.split(" ")[0]}
+							</span>
 							<br />
-							<span style={{ color: "var(--foreground)" }}>Yagoub Bashar</span>
+							<span style={{ color: "var(--foreground)" }}>
+								{profile.fullName.split(" ").slice(1).join(" ")}
+							</span>
 						</motion.h1>
 
 						<motion.div
@@ -114,10 +125,7 @@ export default function Hero() {
 							className="text-base leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0"
 							style={{ color: "var(--muted-foreground)" }}
 						>
-							I craft high-performance, scalable web applications from database
-							to interface. Specializing in the JavaScript ecosystem — React,
-							Next.js, Node.js — with a passion for clean architecture and
-							exceptional user experiences.
+							{profile.tagline}
 						</motion.p>
 
 						<motion.div

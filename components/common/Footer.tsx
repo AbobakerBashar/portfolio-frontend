@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { loadProfile } from "@/lib/profile";
 
 const NAV_LINKS = [
 	{ label: "Home", id: "home" },
@@ -12,6 +13,7 @@ const NAV_LINKS = [
 ];
 
 export default function Footer() {
+	const profile = loadProfile();
 	const scrollTo = (id: string) =>
 		document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 	const scrollTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
@@ -38,15 +40,16 @@ export default function Footer() {
 								className="font-display font-semibold text-sm"
 								style={{ color: "var(--foreground)" }}
 							>
-								Abobaker<span style={{ color: "#6366f1" }}>.</span>dev
+								{profile.fullName.split(" ")[0]}
+								<span style={{ color: "#6366f1" }}>.</span>dev
 							</span>
 						</div>
 						<p
 							className="text-sm leading-relaxed"
 							style={{ color: "var(--muted-foreground)" }}
 						>
-							Full-Stack JavaScript Developer building fast, scalable, and
-							beautiful web applications.
+							{profile.title} building fast, scalable, and beautiful web
+							applications.
 						</p>
 					</div>
 
@@ -82,14 +85,14 @@ export default function Footer() {
 						</h4>
 						<div className="space-y-2">
 							{[
-								{ label: "GitHub", href: "https://github.com/abobakeryagoub" },
+								{ label: "GitHub", href: profile.github },
 								{
 									label: "LinkedIn",
-									href: "https://linkedin.com/in/abobakeryagoub",
+									href: profile.linkedin,
 								},
 								{
-									label: "abobaker.yagoub@gmail.com",
-									href: "mailto:abobaker.yagoub@gmail.com",
+									label: profile.email,
+									href: `mailto:${profile.email}`,
 								},
 							].map((link) => (
 								<a
@@ -113,7 +116,7 @@ export default function Footer() {
 					style={{ borderTop: "1px solid var(--border)" }}
 				>
 					<p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-						© {new Date().getFullYear()} Abobaker Yagoub Bashar. All rights
+						© {new Date().getFullYear()} {profile.fullName}. All rights
 						reserved.
 					</p>
 
