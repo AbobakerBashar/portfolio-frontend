@@ -6,6 +6,9 @@ import { useEffect, useState } from "react";
 import ToggleTheme from "./ToggleTheme";
 import { useScrollSpy } from "@/hooks/use-scroll-spy";
 import Logo from "./Logo";
+import { useGetAdmin } from "@/hooks/use-auth";
+import Link from "next/link";
+import { Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
 	{ id: "home", label: "Home" },
@@ -27,6 +30,8 @@ const SECTIONS = [
 
 export default function Navbar() {
 	const activeSection = useScrollSpy(SECTIONS);
+	const { data } = useGetAdmin();
+	const isAdmin = !!data?.user;
 
 	const [scrolled, setScrolled] = useState(false);
 	const [menuOpen, setMenuOpen] = useState(false);
@@ -99,6 +104,14 @@ export default function Navbar() {
 								<span className="relative z-10">{link.label}</span>
 							</button>
 						))}
+						{isAdmin && (
+							<Link
+								href="/dashboard"
+								className="text-muted-foreground px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200"
+							>
+								Dashboard
+							</Link>
+						)}
 					</div>
 
 					{/* Right controls */}
@@ -126,27 +139,11 @@ export default function Navbar() {
 							style={{ color: "var(--muted-foreground)" }}
 						>
 							<motion.div animate={menuOpen ? "open" : "closed"}>
-								<svg
-									width="18"
-									height="18"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-								>
-									{menuOpen ? (
-										<>
-											<line x1="18" y1="6" x2="6" y2="18" />
-											<line x1="6" y1="6" x2="18" y2="18" />
-										</>
-									) : (
-										<>
-											<line x1="3" y1="6" x2="21" y2="6" />
-											<line x1="3" y1="12" x2="21" y2="12" />
-											<line x1="3" y1="18" x2="21" y2="18" />
-										</>
-									)}
-								</svg>
+								{menuOpen ? (
+									<Menu className="w-4 h-4" />
+								) : (
+									<X className="w-4 h-4" />
+								)}
 							</motion.div>
 						</button>
 					</div>
