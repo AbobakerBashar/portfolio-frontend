@@ -259,16 +259,15 @@ export default function MePage() {
 					</button>
 				</div>
 			</div>
-
-			<div className="grid gap-8 xl:grid-cols-[1.4fr_0.9fr]">
-				{errors?.error && (
-					<p className="text-destructive my-2 xl:col-span-[1.4fr_0.9fr]">
-						{errors.error}
-					</p>
-				)}
+			<div
+				className="glass rounded-2xl p-6 md:p-8"
+				style={{ border: "1px solid var(--border)" }}
+			>
+				{" "}
+				{errors?.error && <p className="text-destructive">{errors.error}</p>}
 				{saved && (
 					<div
-						className="xl:col-span-[1.4fr_0.9fr] inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium w-fit"
+						className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium w-fit"
 						style={{
 							background: "rgba(16,185,129,0.12)",
 							border: "1px solid rgba(16,185,129,0.4)",
@@ -279,6 +278,9 @@ export default function MePage() {
 						Profile saved
 					</div>
 				)}
+			</div>
+
+			<div className="grid gap-8 xl:grid-cols-[1.4fr_0.9fr]">
 				<form
 					id="profile-form"
 					onSubmit={handleSubmit}
