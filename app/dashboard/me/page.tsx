@@ -262,11 +262,13 @@ export default function MePage() {
 
 			<div className="grid gap-8 xl:grid-cols-[1.4fr_0.9fr]">
 				{errors?.error && (
-					<p className="text-destructive my-2">{errors.error}</p>
+					<p className="text-destructive my-2 xl:col-span-[1.4fr_0.9fr]">
+						{errors.error}
+					</p>
 				)}
 				{saved && (
 					<div
-						className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium w-fit"
+						className="xl:col-span-[1.4fr_0.9fr] inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium w-fit"
 						style={{
 							background: "rgba(16,185,129,0.12)",
 							border: "1px solid rgba(16,185,129,0.4)",
