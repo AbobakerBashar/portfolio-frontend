@@ -259,26 +259,30 @@ export default function MePage() {
 					</button>
 				</div>
 			</div>
-			<div
-				className="glass rounded-2xl p-6 md:p-8"
-				style={{ border: "1px solid var(--border)" }}
-			>
-				{" "}
-				{errors?.error && <p className="text-destructive">{errors.error}</p>}
-				{saved && (
+			{errors?.error ||
+				(saved && (
 					<div
-						className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium w-fit"
-						style={{
-							background: "rgba(16,185,129,0.12)",
-							border: "1px solid rgba(16,185,129,0.4)",
-							color: "#10b981",
-						}}
+						className="glass rounded-2xl p-6 md:p-8"
+						style={{ border: "1px solid var(--border)" }}
 					>
-						<CheckCircle2 className="h-4 w-4" />
-						Profile saved
+						{errors?.error && (
+							<p className="text-destructive">{errors.error}</p>
+						)}
+						{saved && (
+							<div
+								className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium w-fit"
+								style={{
+									background: "rgba(16,185,129,0.12)",
+									border: "1px solid rgba(16,185,129,0.4)",
+									color: "#10b981",
+								}}
+							>
+								<CheckCircle2 className="h-4 w-4" />
+								Profile saved
+							</div>
+						)}
 					</div>
-				)}
-			</div>
+				))}
 
 			<div className="grid gap-8 xl:grid-cols-[1.4fr_0.9fr]">
 				<form
