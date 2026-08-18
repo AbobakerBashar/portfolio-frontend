@@ -1,6 +1,12 @@
 "use server";
 
-import type { RegisterInput, AuthRes, LoginInputs } from "@/types/auth";
+import type {
+	RegisterInput,
+	AuthRes,
+	LoginInputs,
+	SettingsInputs,
+	SettingsRes,
+} from "@/types/auth";
 import axios from "axios";
 import { cookies } from "next/headers";
 
@@ -156,3 +162,201 @@ export async function getUser(): Promise<AuthRes> {
 		}
 	}
 }
+
+export const getSeetings = async (): Promise<SettingsRes> => {
+	try {
+		const cookieStore = await cookies();
+		const jwt = cookieStore.get("jwt")?.value;
+		if (!jwt)
+			return {
+				success: false,
+				message: "Unauthorized!",
+			};
+		const res = await axios.get(`${API_URL}/settings`, {
+			withCredentials: true,
+			headers: {
+				Cookie: `token=${jwt}`,
+			},
+		});
+
+		return res.data;
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			if (error.response?.status === 500) {
+				return {
+					success: false,
+					message: error.response?.data?.message,
+				};
+			} else
+				return {
+					success: false,
+					message: error.response?.data?.message,
+				};
+		} else {
+			return {
+				success: false,
+				message: "Faild to load settings",
+			};
+		}
+	}
+};
+
+export const createSettings = async (inputs: SettingsInputs) => {
+	const payload: SettingsInputs = {
+		...inputs,
+		typingTexts: inputs.typingTexts?.filter((text) => text !== ""),
+	};
+
+	try {
+		const cookieStore = await cookies();
+		const jwt = cookieStore.get("jwt")?.value;
+		if (!jwt)
+			return {
+				success: false,
+				message: "Unauthorized!",
+			};
+
+		const res = await axios.post(`${API_URL}/settings`, payload, {
+			withCredentials: true,
+			headers: {
+				cookie: `token=${jwt}`,
+			},
+		});
+
+		return {
+			success: res.data?.success,
+			settings: res.data?.settings,
+		};
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			if (error.response?.status === 500) {
+				return {
+					success: false,
+					message: error.response?.data?.message,
+				};
+			}
+
+			if (error.response?.data.errors)
+				return {
+					errors: error.response?.data.errors,
+					success: false,
+				};
+			else
+				return {
+					success: false,
+					message:
+						error.response?.data?.message || "Faild to create an settings",
+				};
+		} else {
+			return {
+				success: false,
+				message: "Faild to create an settings",
+			};
+		}
+	}
+};
+
+export const updateSettings = async (inputs: SettingsInputs) => {
+	const payload: SettingsInputs = {
+		...inputs,
+		typingTexts: inputs.typingTexts?.filter((text) => text !== ""),
+	};
+	try {
+		const cookieStore = await cookies();
+		const jwt = cookieStore.get("jwt")?.value;
+		if (!jwt)
+			return {
+				success: false,
+				message: "Unauthorized!",
+			};
+
+		const res = await axios.put(`${API_URL}/settings`, payload, {
+			withCredentials: true,
+			headers: {
+				cookie: `token=${jwt}`,
+			},
+		});
+
+		return {
+			success: res.data?.success,
+			settings: res.data?.settings,
+		};
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			if (error.response?.status === 500) {
+				return {
+					success: false,
+					message: error.response?.data?.message,
+				};
+			}
+
+			if (error.response?.data.errors)
+				return {
+					errors: error.response?.data.errors,
+					success: false,
+				};
+			else
+				return {
+					success: false,
+					message:
+						error.response?.data?.message || "Faild to update an settings",
+				};
+		} else {
+			return {
+				success: false,
+				message: "Faild to update an settings",
+			};
+		}
+	}
+};
+
+export const updateSettingsAvatar = async (input: FormData) => {
+	try {
+		const cookieStore = await cookies();
+		const jwt = cookieStore.get("jwt")?.value;
+		if (!jwt)
+			return {
+				success: false,
+				message: "Unauthorized!",
+			};
+
+		const res = await axios.patch(`${API_URL}/settings`, input, {
+			withCredentials: true,
+			headers: {
+				cookie: `token=${jwt}`,
+			},
+		});
+
+		return {
+			success: res.data?.success,
+			settings: res.data?.settings,
+		};
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			if (error.response?.status === 500) {
+				return {
+					success: false,
+					message: error.response?.data?.message,
+				};
+			}
+
+			if (error.response?.data.errors)
+				return {
+					errors: error.response?.data.errors,
+					success: false,
+				};
+			else
+				return {
+					success: false,
+					message:
+						error.response?.data?.message ||
+						"Faild to update an settings avatar",
+				};
+		} else {
+			return {
+				success: false,
+				message: "Faild to update an settings avatar",
+			};
+		}
+	}
+};

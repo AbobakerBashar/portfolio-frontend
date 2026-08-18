@@ -8,6 +8,9 @@ export type DashboardProfile = {
 	phone: string;
 	github: string;
 	linkedin: string;
+	twitter: string;
+	instagram: string;
+	resumeUrl: string;
 	website: string;
 	bio: string;
 };
@@ -25,7 +28,10 @@ export const DEFAULT_PROFILE: DashboardProfile = {
 	phone: "+966 00 000 0000",
 	github: "https://github.com/abobakeryagoub",
 	linkedin: "https://linkedin.com/in/abobakeryagoub",
-	website: "https://abobaker.dev",
+	instagram: "https://instagram.com/in/abobakeryagoub",
+	twitter: "https://twitter.com/in/abobakeryagoub",
+	resumeUrl: "https://abobaker.dev",
+	website: "https://resumeUrl.dev",
 	bio: "I build modern web apps with React, Next.js, and Node.js, with a focus on clean architecture, performance, and polished user experiences.",
 };
 
