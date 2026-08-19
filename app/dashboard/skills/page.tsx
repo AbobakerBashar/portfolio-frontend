@@ -11,7 +11,7 @@ import {
 	type SkillCategory,
 } from "@/lib/skills";
 import SkillCard from "@/components/dashboard/SkillCard";
-import { DashboardSkill } from "@/types/skill";
+import { Skill } from "@/types/skill";
 
 const FILTERS = ["All", ...SKILL_CATEGORIES] as const;
 
@@ -23,7 +23,7 @@ export default function SkillsPage() {
 	const filtered = useMemo(() => {
 		const term = query.trim().toLowerCase();
 
-		let list: DashboardSkill[] = (data?.skills || []).filter((s) => {
+		let list: Skill[] = (data?.skills || []).filter((s) => {
 			const matchesFilter = filter === "All" || s.category === filter;
 			const matchesQuery =
 				!term ||

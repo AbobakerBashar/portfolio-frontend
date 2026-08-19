@@ -1,3 +1,5 @@
+"use client";
+
 import { motion, type Transition } from "framer-motion";
 import { useInView } from "framer-motion";
 import Image from "next/image";

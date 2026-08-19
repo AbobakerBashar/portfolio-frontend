@@ -1,4 +1,9 @@
-import { MutationProjectResponse, ProjectFormValues } from "@/types/project";
+import {
+	MutationProjectResponse,
+	ProjectFormValues,
+	ProjectResponse,
+	ProjectsResponse,
+} from "@/types/project";
 import axios from "axios";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
@@ -43,7 +48,7 @@ export const createProject = async (
 	}
 };
 
-export const getProjects = async () => {
+export const getProjects = async (): Promise<ProjectsResponse | undefined> => {
 	try {
 		const res = await axios.get(`${BASE_URL}/projects`);
 		return res.data;
@@ -70,7 +75,9 @@ export const getProjects = async () => {
 		}
 	}
 };
-export const getProjectById = async (id: string) => {
+export const getProjectById = async (
+	id: string,
+): Promise<ProjectResponse | undefined> => {
 	try {
 		const res = await axios.get(`${BASE_URL}/projects/${id}`);
 

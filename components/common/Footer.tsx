@@ -1,7 +1,7 @@
 "use client";
 
+import { useSettings } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
-import { loadProfile } from "@/lib/profile";
 
 const NAV_LINKS = [
 	{ label: "Home", id: "home" },
@@ -13,7 +13,11 @@ const NAV_LINKS = [
 ];
 
 export default function Footer() {
-	const profile = loadProfile();
+	const { data } = useSettings();
+
+	const profile = data?.settings?.profile;
+	const socialLinks = data?.settings?.socialLinks;
+
 	const scrollTo = (id: string) =>
 		document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 	const scrollTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
@@ -40,7 +44,7 @@ export default function Footer() {
 								className="font-display font-semibold text-sm"
 								style={{ color: "var(--foreground)" }}
 							>
-								{profile.fullName.split(" ")[0]}
+								{profile?.name.split(" ")[0]}
 								<span style={{ color: "#6366f1" }}>.</span>dev
 							</span>
 						</div>
@@ -48,7 +52,7 @@ export default function Footer() {
 							className="text-sm leading-relaxed"
 							style={{ color: "var(--muted-foreground)" }}
 						>
-							{profile.title} building fast, scalable, and beautiful web
+							{profile?.title} building fast, scalable, and beautiful web
 							applications.
 						</p>
 					</div>
@@ -84,28 +88,20 @@ export default function Footer() {
 							Connect
 						</h4>
 						<div className="space-y-2">
-							{[
-								{ label: "GitHub", href: profile.github },
-								{
-									label: "LinkedIn",
-									href: profile.linkedin,
-								},
-								{
-									label: profile.email,
-									href: `mailto:${profile.email}`,
-								},
-							].map((link) => (
-								<a
-									key={link.label}
-									href={link.href}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="block text-sm transition-colors hover:text-indigo-400 truncate"
-									style={{ color: "var(--muted-foreground)" }}
-								>
-									{link.label}
-								</a>
-							))}
+							{Object.entries(socialLinks || {}).map(([key, value]) =>
+								key !== "website" ? (
+									<a
+										key={key}
+										href={value}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="block text-sm transition-colors hover:text-indigo-400 truncate"
+										style={{ color: "var(--muted-foreground)" }}
+									>
+										{key}
+									</a>
+								) : null,
+							)}
 						</div>
 					</div>
 				</div>
@@ -116,8 +112,7 @@ export default function Footer() {
 					style={{ borderTop: "1px solid var(--border)" }}
 				>
 					<p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-						© {new Date().getFullYear()} {profile.fullName}. All rights
-						reserved.
+						© {new Date().getFullYear()} {profile?.name}. All rights reserved.
 					</p>
 
 					<div className="flex items-center gap-4">

@@ -7,7 +7,7 @@ import {
 	updateSkill,
 	getById,
 } from "@/lib/skill";
-import type { SkillFormValues, DashboardSkill } from "@/types/skill";
+import type { Skill, SkillFormValues } from "@/types/skill";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const SKILLS_QUERY_KEY = ["dashboard", "skills"] as const;
@@ -53,7 +53,7 @@ export function useUpdateSkill() {
 		onSuccess: (data) => {
 			queryClient.invalidateQueries({ queryKey: SKILLS_QUERY_KEY });
 			if (data.skill) {
-				queryClient.setQueryData<DashboardSkill>(
+				queryClient.setQueryData<Skill>(
 					["dashboard", "skills", data?.skill?.id],
 					data.skill,
 				);

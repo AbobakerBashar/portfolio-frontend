@@ -10,8 +10,6 @@ import {
 } from "@/lib/project";
 
 import type {
-	ProjectResponse,
-	ProjectsResponse,
 	ProjectFormValues,
 	MutationProjectResponse,
 } from "@/types/project";
@@ -20,14 +18,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 export const PROJECTS_QUERY_KEY = ["dashboard", "projects"] as const;
 
 export function useProjects() {
-	return useQuery<ProjectsResponse>({
+	return useQuery({
 		queryKey: PROJECTS_QUERY_KEY,
 		queryFn: getProjects,
 	});
 }
 
 export function useProject(id: string) {
-	return useQuery<ProjectResponse>({
+	return useQuery({
 		queryKey: [...PROJECTS_QUERY_KEY, id],
 		queryFn: async () => {
 			const res = await getProjectById(id);

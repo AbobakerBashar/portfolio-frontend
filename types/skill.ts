@@ -9,7 +9,7 @@ export type SkillCategory =
 	| "Tools"
 	| "Other";
 
-export interface DashboardSkill {
+export interface Skill {
 	id: string;
 	name: string;
 	proficiency: number;
@@ -33,12 +33,12 @@ export type SkillFormValues = {
 };
 
 export type GetSkillsResponse = {
-	skills?: DashboardSkill[];
+	skills?: Skill[];
 	success: boolean;
 	message?: string;
 };
 export type GetSkillResponse = {
-	skill?: DashboardSkill;
+	skill?: Skill;
 	success: boolean;
 	message?: string;
 };

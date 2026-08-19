@@ -22,40 +22,44 @@ export type LoginInputs = {
 	password: string;
 };
 
-export type SettingsInputs = {
-	profile: {
-		name: string;
-		title: string;
-		tagline: string;
-		bio: string;
-		avatar: string;
-	};
+export type Profile = {
+	name: string;
+	title: string;
+	tagline: string;
+	bio: string;
+	avatar: string;
+};
 
-	contact: {
-		email: string;
-		phone: string;
-		location: string;
-	};
+export type Contact = {
+	email: string;
+	phone: string;
+	location: string;
+};
 
-	socialLinks: {
-		github: string;
-		linkedin: string;
-		twitter: string;
-		instagram: string;
-		website: string;
-	};
+export type SocialLinks = {
+	github: string;
+	linkedin: string;
+	twitter: string;
+	instagram: string;
+	website: string;
+};
 
+export type Availability = {
+	status: boolean;
+	message: string;
+};
+
+export interface SettingsInputs {
+	profile: Profile;
+	contact: Contact;
+	socialLinks: SocialLinks;
+	availability: Availability;
 	resume: {
 		url: string;
 	};
 
-	availability: {
-		status: boolean;
-		message: string;
-	};
-
 	typingTexts: string[];
-};
+}
 
 export type SettingsRes = {
 	success: boolean;

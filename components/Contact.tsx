@@ -1,9 +1,15 @@
+"use client";
+
 import { useSendMsg } from "@/hooks/use-contact";
-import { loadProfile } from "@/lib/profile";
 import type { ContactInput } from "@/types/contact";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Button } from "./ui/button";
+import {
+	Contact as ContactType,
+	Availability,
+	SocialLinks,
+} from "@/types/auth";
 
 const FORM = {
 	name: "",
@@ -12,18 +18,21 @@ const FORM = {
 	message: "",
 };
 
-export default function Contact() {
+type Props = {
+	contact?: ContactType;
+	availability?: Availability;
+	socialLinks?: SocialLinks;
+};
+
+export default function Contact({ contact, socialLinks, availability }: Props) {
 	const [form, setForm] = useState<ContactInput>(FORM);
 	const [errors, setErrors] = useState<Record<string, string> | null>(null);
 	const [copied, setCopied] = useState(false);
 	const [success, setSuccess] = useState(false);
 	const { mutateAsync: sendMsg, isPending: isSending } = useSendMsg();
-	const profile = loadProfile();
-
-	const EMAIL = profile.email;
 
 	const copyEmail = () => {
-		navigator.clipboard.writeText(EMAIL);
+		navigator.clipboard.writeText(contact?.email || "");
 		setCopied(true);
 		setTimeout(() => setCopied(false), 2000);
 	};
@@ -120,7 +129,7 @@ export default function Contact() {
 									className="text-sm truncate"
 									style={{ color: "var(--foreground)" }}
 								>
-									{EMAIL}
+									{contact?.email}
 								</span>
 								<button
 									onClick={copyEmail}
@@ -184,7 +193,7 @@ export default function Contact() {
 									<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
 									<circle cx="12" cy="10" r="3" />
 								</svg>
-								{profile.location} · {profile.availability}
+								{contact?.location} · {availability?.message}
 							</div>
 						</div>
 
@@ -197,44 +206,31 @@ export default function Contact() {
 								Social
 							</div>
 							<div className="space-y-3">
-								{[
-									{
-										label: "GitHub",
-										href: profile.github,
-										color: "#6366f1",
-										sub: profile.github.replace("https://github.com/", "@"),
-									},
-									{
-										label: "LinkedIn",
-										href: profile.linkedin,
-										color: "#0ea5e9",
-										sub: profile.linkedin.replace(
-											"https://linkedin.com/in/",
-											"/in/",
-										),
-									},
-								].map((s) => (
-									<a
-										key={s.label}
-										href={s.href}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="flex items-center justify-between group p-2 rounded-xl transition-all hover:bg-white/5"
-									>
-										<span
-											className="font-semibold text-sm"
-											style={{ color: "var(--foreground)" }}
+								{Object.entries(socialLinks || {}).map(([key, value]) =>
+									key !== "website" ? (
+										<a
+											key={key}
+											href={value}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="flex items-center justify-between group p-2 rounded-xl transition-all hover:bg-white/5 overflow-hidden"
 										>
-											{s.label}
-										</span>
-										<span
-											className="text-xs"
-											style={{ color: "var(--muted-foreground)" }}
-										>
-											{s.sub}
-										</span>
-									</a>
-								))}
+											<span
+												className="font-semibold text-sm"
+												style={{ color: "var(--foreground)" }}
+											>
+												{key.at(0)?.toUpperCase()}
+												{key.slice(1)}
+											</span>
+											<span
+												className="text-xs"
+												style={{ color: "var(--muted-foreground)" }}
+											>
+												@{value.split("/").at(-1)}
+											</span>
+										</a>
+									) : null,
+								)}
 							</div>
 						</div>
 

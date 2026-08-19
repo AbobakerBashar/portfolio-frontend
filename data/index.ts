@@ -256,3 +256,19 @@ export const TESTIMONIALS = [
 			"https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&auto=format",
 	},
 ];
+
+export const PROFILE = {
+	name: "Abobaker Yagoub Bashar",
+	title: "Full-Stack JavaScript Developer",
+	tagline:
+		"I craft high-performance, scalable web applications from database to interface.",
+	bio: "I build modern web apps with React, Next.js, and Node.js, with a focus on clean architecture, performance, and polished user experiences.",
+	avatar: "/bakrey-2.jpeg",
+};
+
+export const TYPING_STRINGS = [
+	"Full-Stack JavaScript Developer",
+	"Next.js & React Specialist",
+	"Node.js Backend Engineer",
+	"TypeScript Enthusiast",
+];
