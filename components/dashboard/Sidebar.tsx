@@ -4,6 +4,7 @@ import ToggleTheme from "@/components/common/ToggleTheme";
 import { cn } from "@/lib/utils";
 import {
 	Code2,
+	Briefcase,
 	FolderKanban,
 	Home,
 	LayoutDashboard,
@@ -20,6 +21,8 @@ import LogoutButton from "../common/LogoutButton";
 const NAV_ITEMS = [
 	{ href: "/dashboard", label: "Overview", icon: LayoutDashboard },
 	{ href: "/dashboard/me", label: "Me", icon: UserRound },
+	{ href: "/dashboard/about", label: "About", icon: UserRound },
+	{ href: "/dashboard/experience", label: "Career Content", icon: Briefcase },
 	{ href: "/dashboard/projects", label: "Projects", icon: FolderKanban },
 	{ href: "/dashboard/projects/new", label: "Add Project", icon: Plus },
 	{ href: "/dashboard/skills", label: "Skills", icon: Code2 },

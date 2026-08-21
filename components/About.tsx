@@ -1,9 +1,10 @@
 "use client";
 
-import { motion, type Transition } from "framer-motion";
-import { useInView } from "framer-motion";
+import { useJourneys } from "@/hooks/use-journey";
+import { DEFAULT_CAREER_CONTENT, loadCareerContent } from "@/lib/experience";
+import { motion, type Transition, useInView } from "framer-motion";
 import Image from "next/image";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const fadeUp = (delay = 0) => ({
 	initial: { opacity: 0, y: 30 },
@@ -12,32 +13,23 @@ const fadeUp = (delay = 0) => ({
 	transition: { duration: 0.6, delay, ease: "easeOut" } as Transition,
 });
 
-const TIMELINE = [
-	{
-		year: "2024",
-		title: "Started Learning Web Development",
-		desc: "Built a strong foundation in HTML, CSS, JavaScript, and responsive UI design.",
-	},
-	{
-		year: "2025",
-		title: "Explored React & Next.js",
-		desc: "Created personal projects, practiced component architecture, and learned how to connect frontend work to real APIs.",
-	},
-	{
-		year: "2026",
-		title: "Preparing for My First Job",
-		desc: "Focused on writing clean code, improving portfolio quality, and applying for junior frontend/full-stack opportunities.",
-	},
-];
-
 export default function About() {
-	const ref = useRef(null);
-	const inView = useInView(ref, { once: true });
+	const timelineRef = useRef(null);
+	const inView = useInView(timelineRef, { once: true });
+	const [career, setCareer] = useState(DEFAULT_CAREER_CONTENT);
+	const { data } = useJourneys();
+	const journeys = data?.learningJourneys || [];
+
+	useEffect(() => {
+		const setData = () => {
+			setCareer(loadCareerContent());
+		};
+		setData();
+	}, []);
 
 	return (
 		<section id="about" className="relative py-32 px-4">
 			<div className="max-w-5xl mx-auto">
-				{/* Section header */}
 				<motion.div {...fadeUp(0)} className="text-center mb-16">
 					<span
 						className="text-xs font-mono font-semibold tracking-widest uppercase mb-3 block"
@@ -62,7 +54,6 @@ export default function About() {
 				</motion.div>
 
 				<div className="grid lg:grid-cols-2 gap-12 items-start">
-					{/* Left: bio + image */}
 					<div>
 						<motion.div
 							{...fadeUp(0.1)}
@@ -128,9 +119,7 @@ export default function About() {
 						</motion.div>
 					</div>
 
-					{/* Right: timeline + education + quick facts */}
 					<div className="space-y-6">
-						{/* Journey timeline */}
 						<motion.div {...fadeUp(0.15)}>
 							<h3
 								className="font-display font-semibold text-base mb-5"
@@ -138,7 +127,7 @@ export default function About() {
 							>
 								My Journey
 							</h3>
-							<div className="relative" ref={ref}>
+							<div className="relative" ref={timelineRef}>
 								<div
 									className="absolute left-3.5 top-0 w-px"
 									style={{
@@ -148,30 +137,29 @@ export default function About() {
 									}}
 								/>
 								<div className="space-y-6">
-									{TIMELINE.map((item, i) => (
+									{journeys.map((item, index) => (
 										<motion.div
-											key={i}
+											key={item.id}
 											initial={{ opacity: 0, x: -20 }}
 											whileInView={{ opacity: 1, x: 0 }}
 											viewport={{ once: true }}
-											transition={{ delay: i * 0.1 + 0.3, duration: 0.5 }}
+											transition={{ delay: index * 0.1 + 0.3, duration: 0.5 }}
 											className="flex gap-4 pl-10 relative"
 										>
 											<div
 												className="absolute left-0 top-1.5 w-7 h-7 rounded-full flex items-center justify-center text-xs font-mono font-bold"
 												style={{
-													background:
-														"linear-gradient(135deg, #6366f1, #06b6d4)",
+													background: `linear-gradient(135deg, ${item.color}, ${item.color}cc)`,
 													color: "white",
 												}}
 											>
-												{String(i + 1).padStart(2, "0")}
+												{String(index + 1).padStart(2, "0")}
 											</div>
 											<div>
 												<div className="flex items-center gap-2 mb-1">
 													<span
 														className="text-xs font-mono font-semibold"
-														style={{ color: "#6366f1" }}
+														style={{ color: item.color }}
 													>
 														{item.year}
 													</span>
@@ -186,7 +174,7 @@ export default function About() {
 													className="text-sm"
 													style={{ color: "var(--muted-foreground)" }}
 												>
-													{item.desc}
+													{item.description}
 												</p>
 											</div>
 										</motion.div>
@@ -195,7 +183,6 @@ export default function About() {
 							</div>
 						</motion.div>
 
-						{/* Education */}
 						<motion.div {...fadeUp(0.3)} className="glass rounded-2xl p-6">
 							<h3
 								className="font-display font-semibold text-base mb-4"
@@ -203,34 +190,40 @@ export default function About() {
 							>
 								Education
 							</h3>
-							<div className="flex items-start gap-3">
-								<div
-									className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-lg"
-									style={{ background: "rgba(99,102,241,0.1)" }}
-								>
-									🎓
-								</div>
-								<div>
-									<div
-										className="font-semibold text-sm"
-										style={{ color: "var(--foreground)" }}
-									>
-										Computer Science Student
+							<div className="space-y-4">
+								{career.education.map((item) => (
+									<div key={item.id} className="flex items-start gap-3">
+										<div
+											className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-lg"
+											style={{ background: `${item.color}15` }}
+										>
+											{item.icon}
+										</div>
+										<div>
+											<div
+												className="font-semibold text-sm"
+												style={{ color: "var(--foreground)" }}
+											>
+												{item.degree}
+											</div>
+											<div
+												className="text-xs mb-1"
+												style={{ color: item.color }}
+											>
+												{item.school}
+											</div>
+											<div
+												className="text-xs"
+												style={{ color: "var(--muted-foreground)" }}
+											>
+												{item.description}
+											</div>
+										</div>
 									</div>
-									<div className="text-xs mb-1" style={{ color: "#6366f1" }}>
-										Kigali Independent University (KIU)
-									</div>
-									<div
-										className="text-xs"
-										style={{ color: "var(--muted-foreground)" }}
-									>
-										Currently pursuing my degree
-									</div>
-								</div>
+								))}
 							</div>
 						</motion.div>
 
-						{/* Career goals + download CV */}
 						<motion.div {...fadeUp(0.35)} className="glass rounded-2xl p-6">
 							<h3
 								className="font-display font-semibold text-base mb-3"

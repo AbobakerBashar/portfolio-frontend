@@ -1,11 +1,21 @@
 "use client";
 
+import { DEFAULT_CAREER_CONTENT, loadCareerContent } from "@/lib/experience";
 import { motion } from "framer-motion";
-import { useState } from "react";
-import { EXPERIENCE } from "../data";
+import { useEffect, useState } from "react";
 
 export default function Experience() {
-	const [expanded, setExpanded] = useState<number | null>(1);
+	const [expanded, setExpanded] = useState<string | null>(null);
+	const [career, setCareer] = useState(DEFAULT_CAREER_CONTENT);
+
+	useEffect(() => {
+		const setData = () => {
+			const next = loadCareerContent();
+			setCareer(next);
+			setExpanded(next.experience[0]?.id ?? null);
+		};
+		setData();
+	}, []);
 
 	return (
 		<section id="experience" className="relative py-32 px-4">
@@ -45,7 +55,6 @@ export default function Experience() {
 				</motion.div>
 
 				<div className="relative">
-					{/* Timeline spine */}
 					<div
 						className="absolute left-6 top-0 bottom-0 w-px hidden md:block"
 						style={{
@@ -56,7 +65,7 @@ export default function Experience() {
 					/>
 
 					<div className="space-y-6">
-						{EXPERIENCE.map((exp, i) => {
+						{career.experience.map((exp, index) => {
 							const isOpen = expanded === exp.id;
 							return (
 								<motion.div
@@ -64,10 +73,9 @@ export default function Experience() {
 									initial={{ opacity: 0, x: -30 }}
 									whileInView={{ opacity: 1, x: 0 }}
 									viewport={{ once: true }}
-									transition={{ delay: i * 0.12, duration: 0.5 }}
+									transition={{ delay: index * 0.12, duration: 0.5 }}
 									className="relative md:pl-16"
 								>
-									{/* Timeline dot */}
 									<div
 										className="absolute left-3.5 top-6 w-5 h-5 rounded-full hidden md:flex items-center justify-center -translate-x-1/2"
 										style={{
@@ -75,7 +83,6 @@ export default function Experience() {
 												? `linear-gradient(135deg, ${exp.color}, ${exp.color}aa)`
 												: "var(--card)",
 											border: `2px solid ${exp.color}`,
-											transition: "background 0.3s ease",
 										}}
 									>
 										{isOpen && (
@@ -84,6 +91,7 @@ export default function Experience() {
 									</div>
 
 									<button
+										type="button"
 										onClick={() => setExpanded(isOpen ? null : exp.id)}
 										className="w-full text-left"
 									>
@@ -162,7 +170,6 @@ export default function Experience() {
 												{exp.description}
 											</p>
 
-											{/* Expandable content */}
 											<motion.div
 												initial={false}
 												animate={{
@@ -173,7 +180,6 @@ export default function Experience() {
 												className="overflow-hidden"
 											>
 												<div className="pt-5 space-y-5">
-													{/* Responsibilities */}
 													<div>
 														<h4
 															className="text-xs font-mono font-semibold uppercase tracking-wider mb-3"
@@ -182,9 +188,9 @@ export default function Experience() {
 															Highlights
 														</h4>
 														<ul className="space-y-2">
-															{exp.responsibilities.map((r, j) => (
+															{exp.responsibilities.map((item, itemIndex) => (
 																<li
-																	key={j}
+																	key={itemIndex}
 																	className="flex items-start gap-2 text-sm"
 																	style={{ color: "var(--muted-foreground)" }}
 																>
@@ -192,13 +198,12 @@ export default function Experience() {
 																		className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0"
 																		style={{ background: exp.color }}
 																	/>
-																	{r}
+																	{item}
 																</li>
 															))}
 														</ul>
 													</div>
 
-													{/* Tech stack */}
 													<div>
 														<h4
 															className="text-xs font-mono font-semibold uppercase tracking-wider mb-3"
@@ -207,16 +212,16 @@ export default function Experience() {
 															Technologies Used
 														</h4>
 														<div className="flex flex-wrap gap-2">
-															{exp.tech.map((t) => (
+															{exp.tech.map((tech) => (
 																<span
-																	key={t}
+																	key={tech}
 																	className="text-xs px-2.5 py-1 rounded-lg font-mono"
 																	style={{
 																		background: `${exp.color}12`,
 																		color: exp.color,
 																	}}
 																>
-																	{t}
+																	{tech}
 																</span>
 															))}
 														</div>
