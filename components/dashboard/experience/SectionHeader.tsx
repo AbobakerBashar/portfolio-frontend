@@ -57,14 +57,27 @@ function SectionHeader({
 						Delete
 					</Button>
 				) : (
-					<Button
-						type="button"
-						variant="destructive"
-						onClick={onDelete}
-						className="cursor-pointer"
-					>
-						{isDeleting ? "Deleting" : "Are you sure?"}
-					</Button>
+					<>
+						<Button
+							type="button"
+							variant="destructive"
+							disabled={isDeleting}
+							onClick={onDelete}
+							className="cursor-pointer"
+						>
+							{isDeleting ? "Deleting" : "Are you sure?"}
+						</Button>
+
+						<Button
+							type="button"
+							variant="outline"
+							disabled={isDeleting}
+							onClick={() => setConfirmDelete(false)}
+							className="cursor-pointer"
+						>
+							NO
+						</Button>
+					</>
 				)}
 			</div>
 		</div>

@@ -1,3 +1,10 @@
+export interface ExperienceRes {
+	experience?: ExperienceEntry & { id: string };
+	success: boolean;
+	message?: string;
+	errors?: Record<string, string>;
+}
+
 export interface ExperienceEntry {
 	id: string;
 	company: string;
@@ -12,7 +19,6 @@ export interface ExperienceEntry {
 }
 
 export interface EducationEntry {
-	id: string;
 	school: string;
 	degree: string;
 	period: string;
@@ -54,5 +60,34 @@ export interface JourneyMutationRes {
 
 export interface CareerContent {
 	experience: ExperienceEntry[];
-	education: EducationEntry[];
+	education: (EducationEntry & { id: string })[];
+	journeys: JourneyEntry[];
+}
+
+export interface EducationsRes {
+	educations?: (EducationEntry & { id: string })[];
+	success: boolean;
+	message?: string;
+	errors?: Record<string, string>;
+}
+
+export interface EducationRes {
+	education?: EducationEntry & { id: string };
+	success: boolean;
+	message?: string;
+	errors?: Record<string, string>;
+}
+
+export interface ExperiencesRes {
+	experiences?: (ExperienceEntry & { id: string })[];
+	success: boolean;
+	message?: string;
+	errors?: Record<string, string>;
+}
+
+export interface ExperienceRes {
+	experience?: ExperienceEntry & { id: string };
+	success: boolean;
+	message?: string;
+	errors?: Record<string, string>;
 }

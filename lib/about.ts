@@ -3,6 +3,7 @@
 import type { AboutResponse, AboutType } from "@/types/about";
 import axios from "axios";
 import { getToken } from "./getToken";
+import { revalidatePath } from "next/cache";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -52,6 +53,9 @@ export async function createAbout(
 			},
 		});
 
+		revalidatePath("/dashboard/about");
+		revalidatePath("/");
+
 		return res.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
@@ -93,6 +97,8 @@ export async function updateAbout(
 				cookie: `token=${token}`,
 			},
 		});
+		revalidatePath("/dashboard/about");
+		revalidatePath("/");
 		return res.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
@@ -135,6 +141,8 @@ export async function updateAboutImage(
 				cookie: `token=${token}`,
 			},
 		});
+		revalidatePath("/dashboard/about");
+		revalidatePath("/");
 		return res.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {

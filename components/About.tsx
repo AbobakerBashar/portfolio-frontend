@@ -1,10 +1,10 @@
 "use client";
 
-import { useJourneys } from "@/hooks/use-journey";
-import { DEFAULT_CAREER_CONTENT, loadCareerContent } from "@/lib/experience";
+import { EducationEntry, JourneyEntry } from "@/types/experience";
+
 import { motion, type Transition, useInView } from "framer-motion";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 
 const fadeUp = (delay = 0) => ({
 	initial: { opacity: 0, y: 30 },
@@ -13,19 +13,15 @@ const fadeUp = (delay = 0) => ({
 	transition: { duration: 0.6, delay, ease: "easeOut" } as Transition,
 });
 
-export default function About() {
+export default function About({
+	journeys,
+	education,
+}: {
+	journeys: (JourneyEntry & { id: string })[];
+	education: (EducationEntry & { id: string })[];
+}) {
 	const timelineRef = useRef(null);
 	const inView = useInView(timelineRef, { once: true });
-	const [career, setCareer] = useState(DEFAULT_CAREER_CONTENT);
-	const { data } = useJourneys();
-	const journeys = data?.learningJourneys || [];
-
-	useEffect(() => {
-		const setData = () => {
-			setCareer(loadCareerContent());
-		};
-		setData();
-	}, []);
 
 	return (
 		<section id="about" className="relative py-32 px-4">
@@ -191,7 +187,7 @@ export default function About() {
 								Education
 							</h3>
 							<div className="space-y-4">
-								{career.education.map((item) => (
+								{education.map((item) => (
 									<div key={item.id} className="flex items-start gap-3">
 										<div
 											className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-lg"

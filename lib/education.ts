@@ -1,40 +1,63 @@
 "use server";
 
-import { ExperienceEntry, ExperiencesRes } from "@/types/experience";
+import {
+	EducationEntry,
+	EducationRes,
+	EducationsRes,
+} from "@/types/experience";
 import axios from "axios";
 import { getToken } from "./getToken";
 import { revalidatePath } from "next/cache";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
-export const getExperiences = async (): Promise<ExperiencesRes> => {
+export const getEducations = async (): Promise<EducationsRes> => {
 	try {
-		const res = await axios.get(`${BASE_URL}/experience`);
-		return res.data;
+		const response = await axios.get(`${BASE_URL}/education`);
+		return response.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
-			if (error.response?.status === 500)
+			console.error("Error fetching educations:", error.response?.data);
+			return {
+				success: false,
+				message: error.message,
+			};
+		} else {
+			return {
+				success: false,
+				message: "An unexpected error occurred.",
+			};
+		}
+	}
+};
+
+export const getEducation = async (id: string): Promise<EducationRes> => {
+	try {
+		const response = await axios.get(`${BASE_URL}/education/${id}`);
+		return response.data;
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			if (error.response?.status === 500) {
 				return {
 					success: false,
 					message: "An unexpected error occurred.",
 				};
-			else
+			} else
 				return {
 					success: false,
 					message:
 						error.response?.data?.message || "An unexpected error occurred.",
 				};
-		} else
+		} else {
 			return {
 				success: false,
 				message: "An unexpected error occurred.",
 			};
+		}
 	}
 };
 
-export const addExperience = async (
-	experience: Omit<ExperienceEntry, "id">,
-): Promise<ExperiencesRes> => {
+export const addEducation = async (education: EducationEntry) => {
 	try {
 		const token = await getToken();
 		if (!token) {
@@ -44,8 +67,7 @@ export const addExperience = async (
 			};
 		}
 
-		const res = await axios.post(`${BASE_URL}/experience`, experience, {
-			withCredentials: true,
+		const response = await axios.post(`${BASE_URL}/education`, education, {
 			headers: {
 				cookie: `token=${token}`,
 			},
@@ -53,44 +75,41 @@ export const addExperience = async (
 
 		revalidatePath("/dashboard/experience");
 		revalidatePath("/");
-
-		return res.data;
+		return response.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
-			console.error("Axios error:", error.response?.data);
-			if (error.response?.status === 500)
+			console.error("Error adding education:", error.response?.data);
+			if (error.response?.status === 500) {
 				return {
 					success: false,
 					message: "An unexpected error occurred.",
 				};
-			else if (error.response?.data?.message)
-				return {
-					success: false,
-					message:
-						error.response?.data?.message || "An unexpected error occurred.",
-				};
-			else if (error.response?.data?.errors)
-				return {
-					success: false,
-					errors: error.response?.data?.errors,
-				};
-			else
-				return {
-					success: false,
-					message: "An unexpected error occurred.",
-				};
-		} else
+			} else {
+				if (error.response?.data?.errors) {
+					return {
+						success: false,
+						errors: error.response.data.errors,
+					};
+				} else
+					return {
+						success: false,
+						message:
+							error.response?.data?.message || "An unexpected error occurred.",
+					};
+			}
+		} else {
 			return {
 				success: false,
 				message: "An unexpected error occurred.",
 			};
+		}
 	}
 };
 
-export const editExperience = async (
-	experience: Omit<ExperienceEntry, "id">,
+export const updateEducation = async (
+	education: EducationEntry,
 	id: string,
-): Promise<ExperiencesRes> => {
+) => {
 	try {
 		const token = await getToken();
 		if (!token) {
@@ -100,8 +119,7 @@ export const editExperience = async (
 			};
 		}
 
-		const res = await axios.put(`${BASE_URL}/experience/${id}`, experience, {
-			withCredentials: true,
+		const response = await axios.put(`${BASE_URL}/education/${id}`, education, {
 			headers: {
 				cookie: `token=${token}`,
 			},
@@ -109,39 +127,37 @@ export const editExperience = async (
 
 		revalidatePath("/dashboard/experience");
 		revalidatePath("/");
-		return res.data;
+		return response.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
-			if (error.response?.status === 500)
+			if (error.response?.status === 500) {
 				return {
 					success: false,
 					message: "An unexpected error occurred.",
 				};
-			else if (error.response?.data?.message)
-				return {
-					success: false,
-					message:
-						error.response?.data?.message || "An unexpected error occurred.",
-				};
-			else if (error.response?.data?.errors)
-				return {
-					success: false,
-					errors: error.response?.data?.errors,
-				};
-			else
-				return {
-					success: false,
-					message: "An unexpected error occurred.",
-				};
-		} else
+			} else {
+				if (error.response?.data?.errors) {
+					return {
+						success: false,
+						errors: error.response.data.errors,
+					};
+				} else
+					return {
+						success: false,
+						message:
+							error.response?.data?.message || "An unexpected error occurred.",
+					};
+			}
+		} else {
 			return {
 				success: false,
 				message: "An unexpected error occurred.",
 			};
+		}
 	}
 };
 
-export const deleteExperience = async (id: string): Promise<ExperiencesRes> => {
+export const deleteEducation = async (id: string) => {
 	try {
 		const token = await getToken();
 		if (!token) {
@@ -151,33 +167,38 @@ export const deleteExperience = async (id: string): Promise<ExperiencesRes> => {
 			};
 		}
 
-		const res = await axios.delete(`${BASE_URL}/experience/${id}`, {
-			withCredentials: true,
-			headers: {
-				cookie: `token=${token}`,
+		const response = await axios.delete(
+			`${BASE_URL}/education/${id}`,
+
+			{
+				headers: {
+					cookie: `token=${token}`,
+				},
 			},
-		});
+		);
 
 		revalidatePath("/dashboard/experience");
 		revalidatePath("/");
-		return res.data;
+		return response.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
-			if (error.response?.status === 500)
+			if (error.response?.status === 500) {
 				return {
 					success: false,
 					message: "An unexpected error occurred.",
 				};
-			else
+			} else {
 				return {
 					success: false,
 					message:
 						error.response?.data?.message || "An unexpected error occurred.",
 				};
-		} else
+			}
+		} else {
 			return {
 				success: false,
 				message: "An unexpected error occurred.",
 			};
+		}
 	}
 };

@@ -1,9 +1,13 @@
+"use server";
+
 import {
 	GetSkillResponse,
 	GetSkillsResponse,
 	SkillFormValues,
 } from "@/types/skill";
 import axios from "axios";
+import { getToken } from "./getToken";
+import { revalidatePath } from "next/cache";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -38,9 +42,23 @@ export const getSkills = async (): Promise<GetSkillsResponse | undefined> => {
 
 export const addSkill = async (values: SkillFormValues) => {
 	try {
+		const token = await getToken();
+		if (!token) {
+			return {
+				success: false,
+				message: "Unauthorized",
+			};
+		}
+
 		const res = await axios.post(`${BASE_URL}/skills`, values, {
 			withCredentials: true,
+			headers: {
+				cookie: `token=${token}`,
+			},
 		});
+
+		revalidatePath("/dashboard/experience");
+		revalidatePath("/");
 		return res.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
@@ -76,9 +94,23 @@ export const addSkill = async (values: SkillFormValues) => {
 
 export const updateSkill = async (id: string = "", values: SkillFormValues) => {
 	try {
+		const token = await getToken();
+		if (!token) {
+			return {
+				success: false,
+				message: "Unauthorized",
+			};
+		}
+
 		const res = await axios.put(`${BASE_URL}/skills/${id}`, values, {
 			withCredentials: true,
+			headers: {
+				cookie: `token=${token}`,
+			},
 		});
+
+		revalidatePath("/dashboard/experience");
+		revalidatePath("/");
 		return res.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
@@ -114,7 +146,23 @@ export const updateSkill = async (id: string = "", values: SkillFormValues) => {
 
 export const deleteSkill = async (id: string = "") => {
 	try {
-		const res = await axios.delete(`${BASE_URL}/skills/${id}`);
+		const token = await getToken();
+		if (!token) {
+			return {
+				success: false,
+				message: "Unauthorized",
+			};
+		}
+
+		const res = await axios.delete(`${BASE_URL}/skills/${id}`, {
+			withCredentials: true,
+			headers: {
+				cookie: `token=${token}`,
+			},
+		});
+
+		revalidatePath("/dashboard/experience");
+		revalidatePath("/");
 		return res.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {

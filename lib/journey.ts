@@ -8,6 +8,7 @@ import {
 } from "@/types/experience";
 import axios from "axios";
 import { getToken } from "./getToken";
+import { revalidatePath } from "next/cache";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -91,6 +92,9 @@ export const addJourney = async (
 				cookie: `token=${token}`,
 			},
 		});
+
+		revalidatePath("/dashboard/experience");
+		revalidatePath("/");
 		return res.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
@@ -144,6 +148,9 @@ export const updateJourney = async (
 				cookie: `token=${token}`,
 			},
 		});
+
+		revalidatePath("/dashboard/experience");
+		revalidatePath("/");
 		return res.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
@@ -197,6 +204,9 @@ export const deleteJourney = async (
 				cookie: `token=${token}`,
 			},
 		});
+
+		revalidatePath("/dashboard/experience");
+		revalidatePath("/");
 		return res.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {

@@ -1,3 +1,5 @@
+"use server";
+
 import {
 	MutationProjectResponse,
 	ProjectFormValues,
@@ -5,6 +7,8 @@ import {
 	ProjectsResponse,
 } from "@/types/project";
 import axios from "axios";
+import { revalidatePath } from "next/cache";
+import { getToken } from "./getToken";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -12,9 +16,23 @@ export const createProject = async (
 	formData: FormData,
 ): Promise<MutationProjectResponse | undefined> => {
 	try {
+		const token = await getToken();
+		if (!token) {
+			return {
+				success: false,
+				message: "Unauthorized",
+			};
+		}
+
 		const res = await axios.post(`${BASE_URL}/projects`, formData, {
 			withCredentials: true,
+			headers: {
+				cookie: `token=${token}`,
+			},
 		});
+
+		revalidatePath("/dashboard/experience");
+		revalidatePath("/");
 		return res.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
@@ -108,8 +126,19 @@ export const getProjectById = async (
 
 export const deleteProject = async (id: string) => {
 	try {
+		const token = await getToken();
+		if (!token) {
+			return {
+				success: false,
+				message: "Unauthorized",
+			};
+		}
+
 		const res = await axios.delete(`${BASE_URL}/projects/${id}`, {
 			withCredentials: true,
+			headers: {
+				cookie: `token=${token}`,
+			},
 		});
 		return res.data;
 	} catch (error) {
@@ -141,9 +170,23 @@ export const updateProject = async (
 	values: ProjectFormValues,
 ): Promise<MutationProjectResponse | undefined> => {
 	try {
+		const token = await getToken();
+		if (!token) {
+			return {
+				success: false,
+				message: "Unauthorized",
+			};
+		}
+
 		const res = await axios.patch(`${BASE_URL}/projects/${id}`, values, {
 			withCredentials: true,
+			headers: {
+				cookie: `token=${token}`,
+			},
 		});
+
+		revalidatePath("/dashboard/experience");
+		revalidatePath("/");
 		return res.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
@@ -182,9 +225,23 @@ export const updateProjectImage = async (
 	value: FormData,
 ): Promise<MutationProjectResponse | undefined> => {
 	try {
+		const token = await getToken();
+		if (!token) {
+			return {
+				success: false,
+				message: "Unauthorized",
+			};
+		}
+
 		const res = await axios.patch(`${BASE_URL}/projects/${id}/image`, value, {
 			withCredentials: true,
+			headers: {
+				cookie: `token=${token}`,
+			},
 		});
+
+		revalidatePath("/dashboard/experience");
+		revalidatePath("/");
 		return res.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {

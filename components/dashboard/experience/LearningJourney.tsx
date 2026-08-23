@@ -1,3 +1,5 @@
+"use client";
+
 import EditorSection from "@/components/dashboard/experience/EditorSection";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import {
 	useAddJourney,
 	useDeleteJourney,
-	useJourneys,
 	useUpdateJourney,
 } from "@/hooks/use-journey";
 import { JourneyEntry } from "@/types/experience";
@@ -24,8 +25,7 @@ const INITAIL_JOURNEY: Omit<JourneyEntry, "id"> = {
 	order: 0,
 };
 
-const LearningJourney = () => {
-	const { data, isLoading } = useJourneys();
+const LearningJourney = ({ journeys }: { journeys: JourneyEntry[] }) => {
 	const { mutateAsync: add, isPending: isAdding } = useAddJourney();
 	const { mutateAsync: update, isPending: isUpdating } = useUpdateJourney();
 	const { mutateAsync: deleteJourney, isPending: isDeleting } =
@@ -40,8 +40,6 @@ const LearningJourney = () => {
 		...INITAIL_JOURNEY,
 		id: "",
 	});
-
-	const journeys = data?.learningJourneys || [];
 
 	const updateJourney = (
 		e:
@@ -93,7 +91,7 @@ const LearningJourney = () => {
 
 	const handleAddJourney = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		if (isAdding || isLoading) return;
+		if (isAdding) return;
 		setErrors(null);
 		if (
 			!journey.year ||
@@ -112,7 +110,9 @@ const LearningJourney = () => {
 
 		const res = await add({
 			...journey,
-			color: journey.color || COLORS[(journeys.length + 1) % COLORS.length],
+			color:
+				journey.color ||
+				COLORS[(journeys.length ? journeys.length : 1) % COLORS.length],
 		});
 
 		if (res?.success) {
@@ -134,7 +134,7 @@ const LearningJourney = () => {
 	};
 
 	const handleUpdateJourney = async () => {
-		if (isAdding || isLoading || isUpdating) return;
+		if (isAdding || isUpdating) return;
 		setErrors(null);
 
 		const jurneyToUpdate = journeys.find((j) => j.id === journeyToEdit.id);
@@ -154,7 +154,7 @@ const LearningJourney = () => {
 			color:
 				journeyToEdit.color ||
 				jurneyToUpdate?.color ||
-				COLORS[(journeys.length + 1) % COLORS.length],
+				COLORS[journeys.length % COLORS.length],
 			order: journeyToEdit.order || jurneyToUpdate?.order,
 		};
 
@@ -175,17 +175,6 @@ const LearningJourney = () => {
 			}
 		}
 	};
-
-	if (isLoading) {
-		return (
-			<div
-				className="flex items-center justify-center min-h-[60vh] text-sm"
-				style={{ color: "var(--muted-foreground)" }}
-			>
-				Loading experience editor...
-			</div>
-		);
-	}
 
 	return (
 		<EditorSection
@@ -264,16 +253,12 @@ const LearningJourney = () => {
 					)}
 
 					<div className="flex mt-5 gap-2">
-						<Button
-							disabled={isAdding || isLoading}
-							type="submit"
-							className="md:px-6"
-						>
+						<Button disabled={isAdding} type="submit" className="md:px-6">
 							{isAdding ? "Adding..." : "Add journey"}
 						</Button>
 						<Button
 							type="button"
-							disabled={isAdding || isLoading}
+							disabled={isAdding}
 							variant="secondary"
 							onClick={() => setAdding(false)}
 							className="md:px-6"

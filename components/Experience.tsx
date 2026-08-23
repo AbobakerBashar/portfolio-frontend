@@ -1,21 +1,15 @@
 "use client";
 
-import { DEFAULT_CAREER_CONTENT, loadCareerContent } from "@/lib/experience";
+import { ExperienceEntry } from "@/types/experience";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-export default function Experience() {
+export default function Experience({
+	experiences,
+}: {
+	experiences: ExperienceEntry[];
+}) {
 	const [expanded, setExpanded] = useState<string | null>(null);
-	const [career, setCareer] = useState(DEFAULT_CAREER_CONTENT);
-
-	useEffect(() => {
-		const setData = () => {
-			const next = loadCareerContent();
-			setCareer(next);
-			setExpanded(next.experience[0]?.id ?? null);
-		};
-		setData();
-	}, []);
 
 	return (
 		<section id="experience" className="relative py-32 px-4">
@@ -65,7 +59,7 @@ export default function Experience() {
 					/>
 
 					<div className="space-y-6">
-						{career.experience.map((exp, index) => {
+						{experiences.map((exp, index) => {
 							const isOpen = expanded === exp.id;
 							return (
 								<motion.div
