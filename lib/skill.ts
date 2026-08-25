@@ -11,7 +11,7 @@ import { revalidatePath } from "next/cache";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
-export const getSkills = async (): Promise<GetSkillsResponse | undefined> => {
+export const getSkills = async (): Promise<GetSkillsResponse> => {
 	try {
 		const res = await axios.get(`${BASE_URL}/skills`);
 		return res.data;
@@ -29,6 +29,11 @@ export const getSkills = async (): Promise<GetSkillsResponse | undefined> => {
 					message:
 						error.response.data.message ||
 						"An unexpected error occurred. Please try again later.",
+				};
+			} else {
+				return {
+					success: false,
+					message: "An unexpected error occurred. Please try again later.",
 				};
 			}
 		} else {

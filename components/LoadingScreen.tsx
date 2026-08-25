@@ -16,9 +16,9 @@ export default function LoadingScreen() {
 				i++;
 			} else {
 				clearInterval(interval);
-				setTimeout(() => setVisible(false), 200);
+				setTimeout(() => setVisible(false), 150);
 			}
-		}, 150);
+		}, 100);
 		return () => clearInterval(interval);
 	}, []);
 

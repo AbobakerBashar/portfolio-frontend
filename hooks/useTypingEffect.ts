@@ -7,10 +7,10 @@ export function useTypingEffect(strings: string[], speed = 60, pause = 2000) {
 	const [deleting, setDeleting] = useState(false);
 
 	useEffect(() => {
-		const current = strings[stringIndex];
+		const current = strings[stringIndex] || "";
 		let timeout: ReturnType<typeof setTimeout>;
 
-		if (!deleting && charIndex < current.length) {
+		if (!deleting && charIndex < current?.length) {
 			timeout = setTimeout(() => setCharIndex((c) => c + 1), speed);
 		} else if (!deleting && charIndex === current.length) {
 			timeout = setTimeout(() => setDeleting(true), pause);

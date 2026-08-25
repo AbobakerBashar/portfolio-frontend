@@ -1,26 +1,22 @@
 "use client";
 
-import { ProjectsResponse } from "@/types/project";
+import { Project } from "@/types/project";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import Github from "./ui/github";
 
-export default function Projects({
-	projects,
-}: {
-	projects?: ProjectsResponse;
-}) {
+export default function Projects({ projects }: { projects: Project[] }) {
 	const [activeFilter, setActiveFilter] = useState("All");
 	const [hoveredId, setHoveredId] = useState<string | null>(null);
 
-	const categories = [...new Set(projects?.projects?.map((p) => p.category))];
+	const categories = [...new Set(projects?.map((p) => p.category))];
 
 	const filtered = useMemo(
 		() =>
 			activeFilter === "All"
-				? projects?.projects || []
-				: (projects?.projects || []).filter((p) => p.category === activeFilter),
+				? projects
+				: projects.filter((p) => p.category === activeFilter),
 		[projects, activeFilter],
 	);
 
@@ -62,41 +58,43 @@ export default function Projects({
 				</motion.div>
 
 				{/* Filters */}
-				<motion.div
-					initial={{ opacity: 0 }}
-					whileInView={{ opacity: 1 }}
-					viewport={{ once: true }}
-					transition={{ delay: 0.2 }}
-					className="flex justify-center gap-2 mb-12 flex-wrap"
-				>
-					<button
-						onClick={() => setActiveFilter("All")}
-						className="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer"
-						style={{
-							background: activeFilter === "All" ? "#06b6d4" : "var(--card)",
-							color:
-								activeFilter === "All" ? "white" : "var(--muted-foreground)",
-							border: `1px solid ${activeFilter === "All" ? "#06b6d4" : "var(--border)"}`,
-						}}
+				{projects.length > 0 && (
+					<motion.div
+						initial={{ opacity: 0 }}
+						whileInView={{ opacity: 1 }}
+						viewport={{ once: true }}
+						transition={{ delay: 0.2 }}
+						className="flex justify-center gap-2 mb-12 flex-wrap"
 					>
-						All
-					</button>
-					{categories.map((cat) => (
 						<button
-							key={cat}
-							onClick={() => setActiveFilter(cat)}
+							onClick={() => setActiveFilter("All")}
 							className="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer"
 							style={{
-								background: activeFilter === cat ? "#06b6d4" : "var(--card)",
+								background: activeFilter === "All" ? "#06b6d4" : "var(--card)",
 								color:
-									activeFilter === cat ? "white" : "var(--muted-foreground)",
-								border: `1px solid ${activeFilter === cat ? "#06b6d4" : "var(--border)"}`,
+									activeFilter === "All" ? "white" : "var(--muted-foreground)",
+								border: `1px solid ${activeFilter === "All" ? "#06b6d4" : "var(--border)"}`,
 							}}
 						>
-							{cat}
+							All
 						</button>
-					))}
-				</motion.div>
+						{categories.map((cat) => (
+							<button
+								key={cat}
+								onClick={() => setActiveFilter(cat)}
+								className="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer"
+								style={{
+									background: activeFilter === cat ? "#06b6d4" : "var(--card)",
+									color:
+										activeFilter === cat ? "white" : "var(--muted-foreground)",
+									border: `1px solid ${activeFilter === cat ? "#06b6d4" : "var(--border)"}`,
+								}}
+							>
+								{cat}
+							</button>
+						))}
+					</motion.div>
+				)}
 
 				{/* Project grid */}
 				<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

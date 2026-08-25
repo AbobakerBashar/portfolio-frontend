@@ -4,8 +4,8 @@ import Experience from "@/components/Experience";
 import Hero from "@/components/Hero";
 import Projects from "@/components/Projects";
 import Skills from "@/components/Skills";
+import { loadAbout } from "@/lib/about";
 // import Testimonials from "@/components/Testimonials";
-import { PROFILE, TYPING_STRINGS } from "@/data";
 import { getSeetings } from "@/lib/auth";
 import { getEducations } from "@/lib/education";
 import { getExperiences } from "@/lib/experience";
@@ -14,7 +14,7 @@ import { getProjects } from "@/lib/project";
 import { getSkills } from "@/lib/skill";
 
 const loadData = async () => {
-	const [settings, skills, projects, experience, journeys, education] =
+	const [settings, skills, projects, experience, journeys, education, about] =
 		await Promise.all([
 			getSeetings(),
 			getSkills(),
@@ -22,27 +22,37 @@ const loadData = async () => {
 			getExperiences(),
 			getJourneys(),
 			getEducations(),
+			loadAbout(),
 		]);
 
 	return {
-		settings,
-		skills,
-		projects,
+		settings: settings.settings,
+		skills: skills.skills || [],
+		projects: projects.projects || [],
 		experiences: experience.experiences || [],
 		journeys: journeys.learningJourneys || [],
 		education: education.educations || [],
+		about: about.about,
 	};
 };
 
 const HomePage = async () => {
-	const { settings, skills, projects, experiences, journeys, education } =
-		await loadData();
-	const profile = settings.settings?.profile || PROFILE;
-	const typingTexts = settings.settings?.typingTexts || TYPING_STRINGS;
-	const resumeUrl = settings?.settings?.resume?.url || "";
-	const socialLinks = settings?.settings?.socialLinks;
-	const contact = settings?.settings?.contact;
-	const availability = settings?.settings?.availability;
+	const {
+		settings,
+		skills,
+		projects,
+		experiences,
+		journeys,
+		education,
+		about,
+	} = await loadData();
+
+	const profile = settings?.profile;
+	const typingTexts = settings?.typingTexts;
+	const resumeUrl = settings?.resume?.url || "";
+	const socialLinks = settings?.socialLinks;
+	const contact = settings?.contact;
+	const availability = settings?.availability;
 
 	return (
 		<>
@@ -52,7 +62,12 @@ const HomePage = async () => {
 				socialLinks={socialLinks}
 				resumeUrl={resumeUrl}
 			/>
-			<About journeys={journeys} education={education} />
+			<About
+				journeys={journeys}
+				education={education}
+				about={about}
+				resumeUrl={resumeUrl}
+			/>
 			<Skills skills={skills} />
 			<Projects projects={projects} />
 			<Experience experiences={experiences} />

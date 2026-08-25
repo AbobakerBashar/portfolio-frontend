@@ -1,36 +1,21 @@
 "use client";
 
+import { CATEGORY_COLORS } from "@/lib/utils";
+import { Skill, SkillCategory } from "@/types/skill";
 import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
-import { GetSkillsResponse, SkillCategory } from "@/types/skill";
 
-const CATEGORY_COLORS: Record<string, string> = {
-	Frontend: "#6366f1",
-	Backend: "#06b6d4",
-	Database: "#10b981",
-	DevOps: "#f59e0b",
-	Cloud: "#3b82f6",
-	Mobile: "#ec4899",
-	"Programming Language": "#ef4444",
-	Tools: "#8b5cf6",
-	Other: "#64748b",
-};
-
-export default function Skills({ skills }: { skills?: GetSkillsResponse }) {
+export default function Skills({ skills }: { skills: Skill[] }) {
 	const [active, setActive] = useState<SkillCategory | "All">("All");
 
 	const filtered = useMemo(() => {
 		const filtered =
-			active === "All"
-				? skills?.skills || []
-				: (skills?.skills || []).filter((s) => s.category === active);
+			active === "All" ? skills : skills.filter((s) => s.category === active);
 
 		return filtered;
 	}, [skills, active]);
 
-	const skillCategories = [
-		...new Set(skills?.skills?.map((s) => s.category) || []),
-	];
+	const skillCategories = [...new Set(skills?.map((s) => s.category) || [])];
 
 	return (
 		<section id="skills" className="relative py-32 px-4">
@@ -72,39 +57,41 @@ export default function Skills({ skills }: { skills?: GetSkillsResponse }) {
 				</motion.div>
 
 				{/* Filter tabs */}
-				<motion.div
-					initial={{ opacity: 0, y: 10 }}
-					whileInView={{ opacity: 1, y: 0 }}
-					viewport={{ once: true }}
-					transition={{ delay: 0.2 }}
-					className="flex justify-center gap-2 mb-12 flex-wrap"
-				>
-					<button
-						onClick={() => setActive("All")}
-						className="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer"
-						style={{
-							background: active === "All" ? "#6366f1" : "var(--card)",
-							color: active === "All" ? "white" : "var(--muted-foreground)",
-							border: `1px solid ${active === "All" ? "#6366f1" : "var(--border)"}`,
-						}}
+				{skills.length > 0 && (
+					<motion.div
+						initial={{ opacity: 0, y: 10 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						transition={{ delay: 0.2 }}
+						className="flex justify-center gap-2 mb-12 flex-wrap"
 					>
-						All
-					</button>
-					{skillCategories.map((cat) => (
 						<button
-							key={cat}
-							onClick={() => setActive(cat)}
+							onClick={() => setActive("All")}
 							className="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer"
 							style={{
-								background: active === cat ? "#6366f1" : "var(--card)",
-								color: active === cat ? "white" : "var(--muted-foreground)",
-								border: `1px solid ${active === cat ? "#6366f1" : "var(--border)"}`,
+								background: active === "All" ? "#6366f1" : "var(--card)",
+								color: active === "All" ? "white" : "var(--muted-foreground)",
+								border: `1px solid ${active === "All" ? "#6366f1" : "var(--border)"}`,
 							}}
 						>
-							{cat}
+							All
 						</button>
-					))}
-				</motion.div>
+						{skillCategories.map((cat) => (
+							<button
+								key={cat}
+								onClick={() => setActive(cat)}
+								className="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer"
+								style={{
+									background: active === cat ? "#6366f1" : "var(--card)",
+									color: active === cat ? "white" : "var(--muted-foreground)",
+									border: `1px solid ${active === cat ? "#6366f1" : "var(--border)"}`,
+								}}
+							>
+								{cat}
+							</button>
+						))}
+					</motion.div>
+				)}
 
 				{/* Skill cards grid */}
 				<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -202,7 +189,7 @@ export default function Skills({ skills }: { skills?: GetSkillsResponse }) {
 								</span>
 							</div>
 							<div className="flex flex-wrap gap-1.5">
-								{(skills?.skills || []).map((s) =>
+								{skills.map((s) =>
 									s.category === c ? (
 										<span
 											key={s.name}

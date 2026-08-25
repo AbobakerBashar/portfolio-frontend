@@ -1,18 +1,23 @@
-"use client";
-
-import { useProjects } from "@/hooks/use-projects";
-import { useSkills } from "@/hooks/use-skills";
 import { Code2, FolderKanban, FolderPlus, Layers, Plus } from "lucide-react";
 import Link from "next/link";
 import ProjectCard from "@/components/dashboard/ProjectCard";
 import SkillCard from "@/components/dashboard/SkillCard";
+import { getProjects } from "@/lib/project";
+import { getSkills } from "@/lib/skill";
 
-export default function DashboardHome() {
-	const { data: projectsData, isLoading } = useProjects();
-	const projects = projectsData?.projects || [];
-	const { data, isLoading: skillsLoading } = useSkills();
+const loadData = async () => {
+	const [projectsData, skillsData] = await Promise.all([
+		getProjects(),
+		getSkills(),
+	]);
+	return {
+		projects: projectsData.projects || [],
+		skills: skillsData.skills || [],
+	};
+};
 
-	const skills = data?.skills || [];
+export default async function DashboardHome() {
+	const { skills, projects } = await loadData();
 
 	const total = projects.length;
 	const fullStack = projects.filter((p) => p.category === "Full Stack").length;
@@ -86,12 +91,6 @@ export default function DashboardHome() {
 							</span>
 							<stat.icon className="h-4 w-4" style={{ color: "#6366f1" }} />
 						</div>
-						<div
-							className="font-display font-bold text-3xl"
-							style={{ color: "var(--foreground)" }}
-						>
-							{isLoading ? "—" : stat.value}
-						</div>
 					</div>
 				))}
 			</div>
@@ -125,11 +124,7 @@ export default function DashboardHome() {
 					</Link>
 				</div>
 
-				{isLoading ? (
-					<div className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-						Loading…
-					</div>
-				) : projects.length === 0 ? (
+				{projects.length === 0 ? (
 					<div
 						className="glass rounded-2xl p-10 text-center"
 						style={{ border: "1px dashed var(--border)" }}
@@ -199,11 +194,7 @@ export default function DashboardHome() {
 					</Link>
 				</div>
 
-				{skillsLoading ? (
-					<div className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-						Loading…
-					</div>
-				) : skills.length === 0 ? (
+				{skills.length === 0 ? (
 					<div
 						className="glass rounded-2xl p-10 text-center"
 						style={{ border: "1px dashed var(--border)" }}

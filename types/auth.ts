@@ -54,9 +54,6 @@ export interface SettingsInputs {
 	contact: Contact;
 	socialLinks: SocialLinks;
 	availability: Availability;
-	resume: {
-		url: string;
-	};
 
 	typingTexts: string[];
 }
@@ -65,5 +62,10 @@ export type SettingsRes = {
 	success: boolean;
 	message?: string;
 	error?: string;
-	settings?: SettingsInputs;
+	settings?: SettingsInputs & {
+		resume: {
+			url: string;
+			publicId: string;
+		};
+	};
 };

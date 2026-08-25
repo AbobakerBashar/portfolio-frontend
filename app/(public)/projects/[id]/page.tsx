@@ -26,7 +26,7 @@ export default function ProjectDetailsPage() {
 		>
 			<div>
 				<Link
-					href="/"
+					href="/#projects"
 					className="inline-flex items-center gap-1.5 text-sm font-medium transition-colors hover:opacity-80 mb-4"
 					style={{ color: "#6366f1" }}
 				>

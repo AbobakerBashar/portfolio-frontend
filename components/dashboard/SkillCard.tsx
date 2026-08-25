@@ -1,17 +1,17 @@
 "use client";
 
 import type { Skill } from "@/types/skill";
-import { SKILL_CATEGORY_COLORS } from "@/lib/skills";
 import { useDeleteSkill } from "@/hooks/use-skills";
 import { Edit3, Loader, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { CATEGORY_COLORS } from "@/lib/utils";
 
 export default function SkillCard({ skill }: { skill: Skill }) {
 	const [confirming, setConfirming] = useState(false);
 	const { mutateAsync: deleteSkill, isPending: isDeleting } = useDeleteSkill();
-	const color = skill.color || SKILL_CATEGORY_COLORS[skill.category];
+	const color = skill.color || CATEGORY_COLORS[skill.category];
 
 	const handleDelete = async () => {
 		if (isDeleting) return;

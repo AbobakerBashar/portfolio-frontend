@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function loadAbout(): Promise<AboutResponse | undefined> {
+export async function loadAbout(): Promise<AboutResponse> {
 	try {
 		const res = await axios.get(`${API_URL}/about`);
 		return res.data;
@@ -34,9 +34,7 @@ export async function loadAbout(): Promise<AboutResponse | undefined> {
 	}
 }
 
-export async function createAbout(
-	about: FormData,
-): Promise<AboutResponse | undefined> {
+export async function createAbout(about: FormData): Promise<AboutResponse> {
 	try {
 		const token = await getToken();
 		if (!token) {
@@ -79,9 +77,7 @@ export async function createAbout(
 		}
 	}
 }
-export async function updateAbout(
-	about: AboutType,
-): Promise<AboutResponse | undefined> {
+export async function updateAbout(about: AboutType): Promise<AboutResponse> {
 	try {
 		const token = await getToken();
 		if (!token) {

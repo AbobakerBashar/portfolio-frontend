@@ -1,8 +1,10 @@
 "use client";
 
+import { AboutType } from "@/types/about";
 import { EducationEntry, JourneyEntry } from "@/types/experience";
 
 import { motion, type Transition, useInView } from "framer-motion";
+import { Download } from "lucide-react";
 import Image from "next/image";
 import { useRef } from "react";
 
@@ -13,15 +15,27 @@ const fadeUp = (delay = 0) => ({
 	transition: { duration: 0.6, delay, ease: "easeOut" } as Transition,
 });
 
+type AboutProps = {
+	resumeUrl: string;
+	journeys: (JourneyEntry & { id: string })[];
+	education: (EducationEntry & { id: string })[];
+	about?: AboutType & {
+		image: {
+			url: string;
+			publicId: string;
+		};
+	};
+};
+
 export default function About({
 	journeys,
 	education,
-}: {
-	journeys: (JourneyEntry & { id: string })[];
-	education: (EducationEntry & { id: string })[];
-}) {
+	about,
+	resumeUrl,
+}: AboutProps) {
 	const timelineRef = useRef(null);
 	const inView = useInView(timelineRef, { once: true });
+	const mindset = about?.mindset.split("\n").map((line) => line.trim());
 
 	return (
 		<section id="about" className="relative py-32 px-4">
@@ -37,15 +51,14 @@ export default function About({
 						className="font-display font-bold text-4xl md:text-5xl mb-4"
 						style={{ color: "var(--foreground)" }}
 					>
-						A Beginner Developer Ready to Grow
+						{about?.heading || "My Journey & Background"}
 					</h2>
 					<p
 						className="text-base max-w-xl mx-auto"
 						style={{ color: "var(--muted-foreground)" }}
 					>
-						I&apos;m currently learning and building with modern web
-						technologies, and I&apos;m actively looking for a junior developer
-						role where I can keep improving while contributing to real projects.
+						{about?.intro ||
+							"I&apos;m currently learning and building with modern web technologies, and I&apos;m actively looking for a junior developer role where I can keep improving while contributing to real projects."}
 					</p>
 				</motion.div>
 
@@ -56,7 +69,10 @@ export default function About({
 							className="relative rounded-3xl overflow-hidden mb-8 aspect-video"
 						>
 							<Image
-								src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=700&h=400&fit=crop&auto=format"
+								src={
+									about?.image?.url ||
+									"https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=700&h=400&fit=crop&auto=format"
+								}
 								alt="Developer workspace"
 								fill
 								sizes="100%"
@@ -90,28 +106,18 @@ export default function About({
 								className="text-sm leading-relaxed mb-4"
 								style={{ color: "var(--muted-foreground)" }}
 							>
-								I&apos;m a beginner web developer with a strong interest in
-								frontend development and building polished user experiences.
-								I&apos;m currently pursuing my studies in Computer Science while
-								building real projects and improving my coding skills.
+								{about?.background ||
+									"I'm a beginner web developer with a strong interest in frontend development and building polished user experiences."}
 							</p>
-							<p
-								className="text-sm leading-relaxed mb-4"
-								style={{ color: "var(--muted-foreground)" }}
-							>
-								What I bring right now is curiosity, consistency, and a
-								willingness to learn fast. I enjoy turning ideas into clean,
-								responsive web interfaces and I&apos;m excited to grow inside a
-								team that values mentorship and collaboration.
-							</p>
-							<p
-								className="text-sm leading-relaxed"
-								style={{ color: "var(--muted-foreground)" }}
-							>
-								I&apos;m actively looking for a junior role where I can
-								contribute, learn from experienced developers, and build my
-								career step by step while completing my studies.
-							</p>
+
+							{mindset?.map((line, index) => (
+								<p
+									key={index}
+									className="text-sm leading-relaxed mb-4 text-muted-foreground"
+								>
+									{line}
+								</p>
+							))}
 						</motion.div>
 					</div>
 
@@ -231,31 +237,19 @@ export default function About({
 								className="text-sm leading-relaxed mb-5"
 								style={{ color: "var(--muted-foreground)" }}
 							>
-								I&apos;m currently studying Computer Science and looking for a
-								junior frontend or full-stack role where I can learn from
-								experienced teammates, improve my technical skills, and
-								contribute to real business products.
+								{about?.careerGoal}
 							</p>
 							<a
-								href="/cv.pdf"
-								download
+								href={resumeUrl}
+								download="Abobaker-Yagoub-Bashar-CV.pdf"
+								target="_blank"
+								rel="noopener noreferrer"
 								className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
 								style={{
 									background: "linear-gradient(135deg, #6366f1, #4f46e5)",
 								}}
 							>
-								<svg
-									width="14"
-									height="14"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-								>
-									<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-									<polyline points="7 10 12 15 17 10" />
-									<line x1="12" y1="15" x2="12" y2="3" />
-								</svg>
+								<Download className="w-4 h-4" />
 								Download CV
 							</a>
 						</motion.div>

@@ -7,6 +7,7 @@ import {
 	registerUser,
 	updateSettings,
 	updateSettingsAvatar,
+	updateSettingsResume,
 } from "@/lib/auth";
 import { LoginInputs, RegisterInput, SettingsInputs } from "@/types/auth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -61,7 +62,14 @@ export const useUpdateSettings = () => {
 
 	return useMutation({
 		mutationKey: ["settings"],
-		mutationFn: async (inputs: SettingsInputs) => updateSettings(inputs),
+		mutationFn: async (
+			inputs: SettingsInputs & {
+				resume: {
+					url: string;
+					publicId: string;
+				};
+			},
+		) => updateSettings(inputs),
 		onSuccess: (data) => {
 			if (data?.settings) queryClient.setQueryData(["settings"], data.settings);
 		},
@@ -74,6 +82,18 @@ export const useUpdateSettingsAvatar = () => {
 	return useMutation({
 		mutationKey: ["settings"],
 		mutationFn: async (input: FormData) => updateSettingsAvatar(input),
+		onSuccess: (data) => {
+			if (data?.settings) queryClient.setQueryData(["settings"], data.settings);
+		},
+	});
+};
+
+export const useUpdateSettingsResume = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationKey: ["settings"],
+		mutationFn: async (input: FormData) => updateSettingsResume(input),
 		onSuccess: (data) => {
 			if (data?.settings) queryClient.setQueryData(["settings"], data.settings);
 		},

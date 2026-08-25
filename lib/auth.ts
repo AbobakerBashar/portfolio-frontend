@@ -165,19 +165,7 @@ export async function getUser(): Promise<AuthRes> {
 
 export const getSeetings = async (): Promise<SettingsRes> => {
 	try {
-		const cookieStore = await cookies();
-		const jwt = cookieStore.get("jwt")?.value;
-		if (!jwt)
-			return {
-				success: false,
-				message: "Unauthorized!",
-			};
-		const res = await axios.get(`${API_URL}/settings`, {
-			withCredentials: true,
-			headers: {
-				Cookie: `token=${jwt}`,
-			},
-		});
+		const res = await axios.get(`${API_URL}/settings`);
 
 		return res.data;
 	} catch (error) {
@@ -320,7 +308,7 @@ export const updateSettingsAvatar = async (input: FormData) => {
 				message: "Unauthorized!",
 			};
 
-		const res = await axios.patch(`${API_URL}/settings`, input, {
+		const res = await axios.patch(`${API_URL}/settings/avatar`, input, {
 			withCredentials: true,
 			headers: {
 				cookie: `token=${jwt}`,
@@ -356,6 +344,57 @@ export const updateSettingsAvatar = async (input: FormData) => {
 			return {
 				success: false,
 				message: "Faild to update an settings avatar",
+			};
+		}
+	}
+};
+
+export const updateSettingsResume = async (input: FormData) => {
+	try {
+		const cookieStore = await cookies();
+		const jwt = cookieStore.get("jwt")?.value;
+		if (!jwt)
+			return {
+				success: false,
+				message: "Unauthorized!",
+			};
+
+		const res = await axios.patch(`${API_URL}/settings/resume`, input, {
+			withCredentials: true,
+			headers: {
+				cookie: `token=${jwt}`,
+			},
+		});
+
+		return {
+			success: res.data?.success,
+			settings: res.data?.settings,
+		};
+	} catch (error) {
+		if (axios.isAxiosError(error)) {
+			if (error.response?.status === 500) {
+				return {
+					success: false,
+					message: error.response?.data?.message,
+				};
+			}
+
+			if (error.response?.data.errors)
+				return {
+					errors: error.response?.data.errors,
+					success: false,
+				};
+			else
+				return {
+					success: false,
+					message:
+						error.response?.data?.message ||
+						"Faild to update an settings resume",
+				};
+		} else {
+			return {
+				success: false,
+				message: "Faild to update an settings resume",
 			};
 		}
 	}

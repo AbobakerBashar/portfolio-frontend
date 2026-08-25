@@ -16,8 +16,8 @@ const fadeUp = {
 };
 
 type Props = {
-	profile: NonNullable<SettingsRes["settings"]>["profile"];
-	typingTexts: NonNullable<SettingsRes["settings"]>["typingTexts"];
+	profile?: NonNullable<SettingsRes["settings"]>["profile"];
+	typingTexts?: NonNullable<SettingsRes["settings"]>["typingTexts"];
 	resumeUrl: string;
 	socialLinks?: NonNullable<SettingsRes["settings"]>["socialLinks"];
 };
@@ -36,7 +36,7 @@ export default function Hero({
 	resumeUrl,
 	socialLinks,
 }: Props) {
-	const typedText = useTypingEffect(typingTexts);
+	const typedText = useTypingEffect(typingTexts || []);
 
 	return (
 		<section
@@ -182,7 +182,8 @@ export default function Hero({
 							</a>
 							<a
 								href={resumeUrl}
-								download
+								download="Abobaker-Yagoub-Bashar-CV.pdf"
+								target="_blank"
 								className="px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-[1.03]"
 								style={{
 									color: "#06b6d4",
@@ -251,7 +252,7 @@ export default function Hero({
 								<Image
 									fill
 									sizes="100%"
-									src={profile.avatar}
+									src={profile?.avatar || "/barey-2.jpg"}
 									alt="Abobaker Yagoub Bashar — Full-Stack JavaScript Developer"
 									className="w-full h-full object-cover"
 								/>

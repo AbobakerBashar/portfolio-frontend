@@ -87,7 +87,7 @@ export default function Navbar() {
 							<button
 								key={link.id}
 								onClick={() => scrollTo(link.id)}
-								className={`relative px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
+								className={`relative px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 cursor-pointer ${
 									activeSection === link.id
 										? "text-primary"
 										: "text-muted-foreground"

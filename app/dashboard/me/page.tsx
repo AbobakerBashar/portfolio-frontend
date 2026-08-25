@@ -8,6 +8,7 @@ import {
 	useSettings,
 	useUpdateSettings,
 	useUpdateSettingsAvatar,
+	useUpdateSettingsResume,
 } from "@/hooks/use-auth";
 import { SettingsInputs } from "@/types/auth";
 import {
@@ -47,9 +48,6 @@ const FORM_VALUES: SettingsInputs = {
 		message: "",
 		status: false,
 	},
-	resume: {
-		url: "",
-	},
 };
 
 export default function MePage() {
@@ -57,6 +55,10 @@ export default function MePage() {
 	const [saved, setSaved] = useState(false);
 	const [settings, setSettings] = useState<SettingsInputs>(FORM_VALUES);
 	const [avatar, setAvatar] = useState("");
+	const [resume, setResume] = useState({
+		file: null as File | null,
+		name: "",
+	});
 
 	const { data, isLoading } = useSettings();
 	const { mutateAsync: createSettings, isPending: isCreating } =
@@ -66,6 +68,9 @@ export default function MePage() {
 		useUpdateSettingsAvatar();
 
 	const { mutateAsync: update, isPending: isUpdating } = useUpdateSettings();
+
+	const { mutateAsync: updateResume, isPending: isUpdatingResume } =
+		useUpdateSettingsResume();
 
 	const loading = isLoading || isCreating || isUpdating;
 
@@ -177,7 +182,13 @@ export default function MePage() {
 					});
 			}
 		} else {
-			const res = await update(settings);
+			const res = await update({
+				...settings,
+				resume: {
+					url: data?.settings?.resume?.url || "",
+					publicId: data?.settings?.resume?.publicId || "",
+				},
+			});
 
 			if (res.success) {
 				setSaved(true);
@@ -192,6 +203,42 @@ export default function MePage() {
 						error: "Faild to create settings",
 					});
 			}
+		}
+	};
+
+	const handleResumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
+		if (!file) return;
+		setResume({
+			name: file.name,
+			file: file,
+		});
+	};
+
+	const handleUploadResume = async () => {
+		if (!resume.file || isUpdatingResume) return;
+		const formData = new FormData();
+		formData.append("resume", resume.file);
+		formData.append("publicId", data?.settings?.resume?.publicId || "");
+
+		const res = await updateResume(formData);
+
+		if (res.success) {
+			setSaved(true);
+			setResume({
+				name: "",
+				file: null,
+			});
+		} else {
+			if (res.errors) setErrors(res.errors);
+			else if (res.message)
+				setErrors({
+					error: res.message,
+				});
+			else
+				setErrors({
+					error: "Faild to update settings resume",
+				});
 		}
 	};
 
@@ -563,16 +610,102 @@ export default function MePage() {
 								className="font-medium"
 								style={{ color: "var(--foreground)" }}
 							>
-								Resume URL
+								Resume (PDF)
 							</span>
-							<Input
-								value={settings?.resume.url || ""}
-								name="url"
-								onChange={(e) => handleChange(e, "resume")}
-								className="h-10"
-							/>
+							<div
+								className="flex items-center gap-3 rounded-lg border p-4"
+								style={{ borderColor: "var(--border)" }}
+							>
+								<div className="flex-1">
+									{resume.name || data?.settings?.resume?.url ? (
+										<div className="flex items-center justify-between gap-3">
+											<div>
+												<p
+													className="text-sm font-medium"
+													style={{ color: "var(--foreground)" }}
+												>
+													{resume.name ||
+														(data?.settings?.resume?.url
+															? data?.settings?.resume?.url.split("/").pop()
+															: "No file selected")}
+												</p>
+												<p
+													className="text-xs"
+													style={{ color: "var(--muted-foreground)" }}
+												>
+													PDF Document
+												</p>
+											</div>
+										</div>
+									) : (
+										<p
+											className="text-sm"
+											style={{ color: "var(--muted-foreground)" }}
+										>
+											No resume uploaded yet
+										</p>
+									)}
+								</div>
+								{resume.file ? (
+									<>
+										<Button onClick={handleUploadResume}>
+											{isUpdatingResume ? "Saving.." : "Save"}
+										</Button>
+										<Button
+											onClick={() => {
+												setResume({ name: "", file: null });
+
+												const timer = setTimeout(() => {
+													document.getElementById("resume-upload")?.click();
+												}, 50);
+												return () => clearTimeout(timer);
+											}}
+										>
+											Change
+										</Button>
+									</>
+								) : (
+									<label
+										id="resume-upload"
+										className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border transition-colors hover:bg-card"
+										style={{
+											borderColor: "var(--border)",
+											color: "#6366f1",
+										}}
+										title="Upload resume"
+									>
+										<Upload className="h-4 w-4" />
+										<input
+											id="resume-upload"
+											type="file"
+											accept=".pdf,application/pdf"
+											onChange={handleResumeChange}
+											disabled={isUpdatingResume}
+											className="hidden"
+										/>
+									</label>
+								)}
+							</div>
 							{errors?.["resume.url"] && (
 								<p className="text-destructive">{errors["resume.url"]}</p>
+							)}
+							<p
+								className="text-xs"
+								style={{ color: "var(--muted-foreground)" }}
+							>
+								Upload a PDF file of your resume/CV
+							</p>
+							<span style={{ color: "var(--foreground)" }}>Website URL</span>
+							<Input
+								value={settings?.socialLinks.website || ""}
+								name="website"
+								onChange={(e) => handleChange(e, "socialLinks")}
+								className="h-10"
+							/>
+							{errors?.["socialLinks.website"] && (
+								<p className="text-destructive">
+									{errors["socialLinks.website"]}
+								</p>
 							)}
 						</label>
 

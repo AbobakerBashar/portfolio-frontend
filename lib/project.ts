@@ -66,7 +66,7 @@ export const createProject = async (
 	}
 };
 
-export const getProjects = async (): Promise<ProjectsResponse | undefined> => {
+export const getProjects = async (): Promise<ProjectsResponse> => {
 	try {
 		const res = await axios.get(`${BASE_URL}/projects`);
 		return res.data;
@@ -83,6 +83,11 @@ export const getProjects = async (): Promise<ProjectsResponse | undefined> => {
 					success: false,
 					message: error.response.data.message,
 					error: error.response.data.error,
+				};
+			} else {
+				return {
+					success: false,
+					message: "An unexpected error occurred. Please try again later.",
 				};
 			}
 		} else {
