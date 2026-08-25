@@ -4,12 +4,8 @@ import { useSkills } from "@/hooks/use-skills";
 import { Search } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { cn } from "@/lib/utils";
-import {
-	SKILL_CATEGORIES,
-	SKILL_CATEGORY_COLORS,
-	type SkillCategory,
-} from "@/lib/skills";
+import { cn, SKILL_CATEGORIES, SKILL_CATEGORY_COLORS } from "@/lib/utils";
+import { type SkillCategory } from "@/types/skill";
 import SkillCard from "@/components/dashboard/SkillCard";
 import { Skill } from "@/types/skill";
 

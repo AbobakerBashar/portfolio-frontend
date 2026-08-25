@@ -1,7 +1,7 @@
 "use client";
 
 // import type { SkillFormValues } from "@/typs/skill";
-import { SKILL_CATEGORIES, SKILL_CATEGORY_COLORS } from "@/lib/skills";
+import { SKILL_CATEGORIES, SKILL_CATEGORY_COLORS } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";

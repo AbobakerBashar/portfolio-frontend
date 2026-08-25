@@ -2,7 +2,7 @@
 
 import SkillForm from "@/components/dashboard/SkillForm";
 import { useSkill } from "@/hooks/use-skills";
-import { SKILL_CATEGORY_COLORS } from "@/lib/skills";
+import { SKILL_CATEGORY_COLORS } from "@/lib/utils";
 import { ArrowLeft, PackageX } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
