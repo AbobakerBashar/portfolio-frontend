@@ -17,7 +17,6 @@ export const getEducations = async (): Promise<EducationsRes> => {
 		return response.data;
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
-			console.error("Error fetching educations:", error.response?.data);
 			return {
 				success: false,
 				message: error.message,
