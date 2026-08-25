@@ -29,7 +29,10 @@ const FORM_VALUES: SettingsInputs = {
 		tagline: "",
 		title: "",
 		bio: "",
-		avatar: "",
+		avatar: {
+			url: "",
+			publicId: "",
+		},
 	},
 	contact: {
 		email: "",
@@ -77,7 +80,7 @@ export default function MePage() {
 	useEffect(() => {
 		const updateAvatar = () => {
 			if (settings?.profile?.avatar) {
-				setAvatar(settings.profile.avatar);
+				setAvatar(settings.profile.avatar.url);
 				return;
 			}
 
@@ -99,6 +102,7 @@ export default function MePage() {
 
 		const formData = new FormData();
 		formData.append("avatar", file);
+		formData.append("publicId", settings?.profile?.avatar?.publicId || "");
 
 		const res = await updateAvatar(formData);
 
@@ -788,7 +792,7 @@ export default function MePage() {
 							{settings?.profile.avatar ? (
 								<div className="w-10 h-10 overflow-hidden rounded-full relative">
 									<Image
-										src={settings.profile.avatar}
+										src={settings.profile.avatar.url}
 										alt="Avatar"
 										fill
 										sizes="100%"

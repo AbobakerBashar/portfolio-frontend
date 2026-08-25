@@ -27,7 +27,10 @@ export type Profile = {
 	title: string;
 	tagline: string;
 	bio: string;
-	avatar: string;
+	avatar: {
+		url: string;
+		publicId: string;
+	};
 };
 
 export type Contact = {

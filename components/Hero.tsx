@@ -252,7 +252,7 @@ export default function Hero({
 								<Image
 									fill
 									sizes="100%"
-									src={profile?.avatar || "/barey-2.jpg"}
+									src={profile?.avatar.url || "/barey-2.jpg"}
 									alt="Abobaker Yagoub Bashar — Full-Stack JavaScript Developer"
 									className="w-full h-full object-cover"
 								/>
