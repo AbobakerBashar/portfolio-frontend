@@ -1,15 +1,14 @@
 "use client";
 
 import { useSendMsg } from "@/hooks/use-contact";
+import {
+	Availability,
+	Contact as ContactType,
+	SocialLinks,
+} from "@/types/auth";
 import type { ContactInput } from "@/types/contact";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Button } from "./ui/button";
-import {
-	Contact as ContactType,
-	Availability,
-	SocialLinks,
-} from "@/types/auth";
 
 const FORM = {
 	name: "",
@@ -42,6 +41,7 @@ export default function Contact({ contact, socialLinks, availability }: Props) {
 
 		setErrors(null);
 		setSuccess(false);
+		let timer: NodeJS.Timeout | null = null;
 
 		if (!form.name || !form.email || !form.message)
 			return setErrors({
@@ -49,6 +49,10 @@ export default function Contact({ contact, socialLinks, availability }: Props) {
 			});
 		const res = await sendMsg(form);
 		if (res && res.success) {
+			timer = setTimeout(() => {
+				setSuccess(false);
+				if (timer) clearTimeout(timer);
+			}, 5000);
 			setSuccess(true);
 			setForm(FORM);
 		} else {
@@ -60,6 +64,9 @@ export default function Contact({ contact, socialLinks, availability }: Props) {
 						"An unexpected error occurred. Please try again later.",
 				});
 		}
+		return () => {
+			if (timer) clearTimeout(timer);
+		};
 	};
 
 	return (
@@ -413,7 +420,7 @@ export default function Contact({ contact, socialLinks, availability }: Props) {
 								disabled={isSending}
 								whileHover={{ scale: 1.01 }}
 								whileTap={{ scale: 0.99 }}
-								className="w-full py-3.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60"
+								className="w-full py-3.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer disabled:cursor-not-allowed"
 								style={{
 									background: "linear-gradient(135deg, #6366f1, #4f46e5)",
 									boxShadow: "0 0 30px rgba(99,102,241,0.25)",
@@ -478,15 +485,6 @@ export default function Contact({ contact, socialLinks, availability }: Props) {
 								>
 									Thanks! I&apos;ll get back to you within 24 hours.
 								</motion.div>
-							)}
-							{success && (
-								<Button
-									onClick={() => setSuccess(false)}
-									variant="outline"
-									className="cursor-pointer w-full"
-								>
-									Send again
-								</Button>
 							)}
 						</form>
 					</motion.div>

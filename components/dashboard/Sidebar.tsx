@@ -10,6 +10,7 @@ import {
 	LayoutDashboard,
 	Menu,
 	Plus,
+	Settings,
 	UserRound,
 	X,
 } from "lucide-react";
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
 	{ href: "/dashboard/projects/new", label: "Add Project", icon: Plus },
 	{ href: "/dashboard/skills", label: "Skills", icon: Code2 },
 	{ href: "/dashboard/skills/new", label: "Add Skill", icon: Plus },
+	{ href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
 export default function Sidebar() {
