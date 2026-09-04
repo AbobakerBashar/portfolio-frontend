@@ -9,6 +9,7 @@ import Logo from "./Logo";
 import { useGetAdmin } from "@/hooks/use-auth";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 const NAV_LINKS = [
 	{ id: "home", label: "Home" },
@@ -32,6 +33,8 @@ export default function Navbar() {
 	const activeSection = useScrollSpy(SECTIONS);
 	const { data } = useGetAdmin();
 	const isAdmin = !!data?.user;
+
+	const pathname = usePathname();
 
 	const [scrolled, setScrolled] = useState(false);
 	const [menuOpen, setMenuOpen] = useState(false);
@@ -73,7 +76,9 @@ export default function Navbar() {
 			>
 				<div
 					className={`w-full max-w-5xl flex items-center justify-between px-5 py-3 rounded-2xl transition-all duration-300 ${
-						scrolled ? "glass shadow-2xl" : "bg-transparent"
+						scrolled
+							? "bg-background/80 backdrop-blur-lg shadow-2xl"
+							: "bg-transparent"
 					}`}
 				>
 					{/* Logo */}
@@ -83,27 +88,45 @@ export default function Navbar() {
 
 					{/* Desktop nav */}
 					<div className="hidden md:flex items-center gap-1">
-						{NAV_LINKS.map((link) => (
-							<button
-								key={link.id}
-								onClick={() => scrollTo(link.id)}
-								className={`relative px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 cursor-pointer ${
-									activeSection === link.id
-										? "text-primary"
-										: "text-muted-foreground"
-								}`}
-							>
-								{activeSection === link.id && (
-									<motion.span
-										layoutId="nav-pill"
-										className="absolute inset-0 rounded-lg"
-										style={{ background: "rgba(99,102,241,0.1)" }}
-										transition={{ type: "spring", stiffness: 400, damping: 30 }}
-									/>
-								)}
-								<span className="relative z-10">{link.label}</span>
-							</button>
-						))}
+						{NAV_LINKS.map((link) =>
+							pathname === "/" ? (
+								<button
+									key={link.id}
+									onClick={() => scrollTo(link.id)}
+									className={`relative px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 cursor-pointer ${
+										activeSection === link.id
+											? "text-primary"
+											: "text-muted-foreground"
+									}`}
+								>
+									{activeSection === link.id && (
+										<motion.span
+											layoutId="nav-pill"
+											className="absolute inset-0 rounded-lg"
+											style={{ background: "rgba(99,102,241,0.1)" }}
+											transition={{
+												type: "spring",
+												stiffness: 400,
+												damping: 30,
+											}}
+										/>
+									)}
+									<span className="relative z-10">{link.label}</span>
+								</button>
+							) : (
+								<Link
+									href={`/#${link.id}`}
+									key={link.id}
+									className={`relative px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 cursor-pointer ${
+										activeSection === link.id
+											? "text-primary"
+											: "text-muted-foreground"
+									}`}
+								>
+									<span className="relative z-10">{link.label}</span>
+								</Link>
+							),
+						)}
 						{isAdmin && (
 							<Link
 								href="/dashboard"
@@ -139,10 +162,10 @@ export default function Navbar() {
 							style={{ color: "var(--muted-foreground)" }}
 						>
 							<motion.div animate={menuOpen ? "open" : "closed"}>
-								{menuOpen ? (
-									<Menu className="w-4 h-4" />
+								{!menuOpen ? (
+									<Menu className="w-4 h-4 cursor-pointer" />
 								) : (
-									<X className="w-4 h-4" />
+									<X className="w-4 h-4 cursor-pointer" />
 								)}
 							</motion.div>
 						</button>
@@ -157,23 +180,37 @@ export default function Navbar() {
 							animate={{ opacity: 1, y: 0, scale: 1 }}
 							exit={{ opacity: 0, y: -10, scale: 0.97 }}
 							transition={{ duration: 0.2 }}
-							className="absolute top-full mt-2 left-4 right-4 glass rounded-2xl py-3 shadow-2xl md:hidden"
+							className="absolute top-full mt-2 left-4 right-4 glass rounded-2xl py-3 shadow-2xl md:hidden bg-background/80 backdrop-blur-lg"
 						>
-							{NAV_LINKS.map((link) => (
-								<button
-									key={link.id}
-									onClick={() => scrollTo(link.id)}
-									className="w-full text-left px-5 py-3 text-sm font-medium transition-colors duration-150 hover:text-indigo-400"
-									style={{
-										color:
-											activeSection === link.id
-												? "#6366f1"
-												: "var(--muted-foreground)",
-									}}
-								>
-									{link.label}
-								</button>
-							))}
+							{NAV_LINKS.map((link) =>
+								pathname === "/" ? (
+									<button
+										key={link.id}
+										onClick={() => scrollTo(link.id)}
+										className="w-full text-left px-5 py-3 text-sm font-medium transition-colors duration-150 hover:text-indigo-400 cursor-pointer"
+										style={{
+											color:
+												activeSection === link.id
+													? "#6366f1"
+													: "var(--muted-foreground)",
+										}}
+									>
+										{link.label}
+									</button>
+								) : (
+									<Link
+										href={`/#${link.id}`}
+										key={link.id}
+										onClick={() => scrollTo(link.id)}
+										className="block w-full text-left px-5 py-3 text-sm font-medium transition-colors duration-150 hover:text-indigo-400 cursor-pointer"
+										style={{
+											color: "var(--muted-foreground)",
+										}}
+									>
+										{link.label}
+									</Link>
+								),
+							)}
 						</motion.div>
 					)}
 				</AnimatePresence>

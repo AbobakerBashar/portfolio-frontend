@@ -215,7 +215,7 @@ export default function Projects({ projects }: { projects: Project[] }) {
 											className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-[1.02]"
 											style={{
 												background: "var(--secondary)",
-												color: "var(--muted-foreground)",
+												color: "var(--foreground)",
 												border: "1px solid var(--border)",
 											}}
 										>
@@ -228,7 +228,7 @@ export default function Projects({ projects }: { projects: Project[] }) {
 											rel="noopener noreferrer"
 											className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold text-white transition-all duration-200 hover:scale-[1.02] hover:opacity-90"
 											style={{
-												background: `linear-gradient(135deg, ${project.color}, ${project.color}cc)`,
+												background: `linear-gradient(135deg, ${project.color || "#6366f1"}, ${project.color || "#6366f1"}cc)`,
 											}}
 										>
 											<svg
